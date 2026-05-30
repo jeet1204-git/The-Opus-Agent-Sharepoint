@@ -145,6 +145,16 @@ language sql stable as $$
   limit match_count;
 $$;
 
+-- 5b. FUNCTION EXPOSURE HARDENING (Supabase security advisor) ------------------
+-- Pin search_path on the search function.
+alter function public.match_assets(vector, integer) set search_path = public;
+-- handle_new_user is a trigger fn — never callable via the REST API.
+revoke execute on function public.handle_new_user() from public, anon, authenticated;
+-- current_org_id is SECURITY DEFINER and used inside RLS policies, so it MUST stay
+-- callable by `authenticated`; just remove the needless anon/public exposure.
+revoke execute on function public.current_org_id() from public, anon;
+grant execute on function public.current_org_id() to authenticated;
+
 -- 6. ROW-LEVEL SECURITY -------------------------------------------------------
 alter table public.organizations enable row level security;
 alter table public.profiles      enable row level security;
