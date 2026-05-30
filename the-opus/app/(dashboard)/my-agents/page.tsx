@@ -1,25 +1,11 @@
-import { Search, Bell, Trophy, TrendingUp } from 'lucide-react';
+import { Trophy, TrendingUp } from 'lucide-react';
+import Header from '@/components/Header';
 
-const FeedPage = () => {
+export default function MyAgentsPage() {
   return (
     <>
-      <header className="h-16 border-b border-slate-800 flex items-center justify-between px-8 bg-[#0f172a]/50 backdrop-blur-md">
-        <div className="relative w-96">
-          <Search className="absolute left-3 top-2.5 text-slate-500" size={18} />
-          <input
-            type="text"
-            placeholder="Search agents..."
-            className="w-full bg-slate-900 border border-slate-700 rounded-md py-2 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
-          />
-        </div>
-        <div className="flex items-center gap-4">
-          <Bell size={20} className="text-slate-400 cursor-pointer" />
-          <div className="flex items-center gap-2 bg-slate-800 px-3 py-1.5 rounded-full cursor-pointer">
-            <div className="w-6 h-6 bg-slate-500 rounded-full" />
-            <span className="text-sm font-medium">Sarah J.</span>
-          </div>
-        </div>
-      </header>
+      <Header />
+
 
       <div className="flex flex-1 overflow-hidden">
         {/* FEED GRID */}
@@ -90,5 +76,3 @@ const LeaderboardSection = () => (
     </div>
   </div>
 );
-
-export default FeedPage;

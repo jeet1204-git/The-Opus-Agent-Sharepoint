@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutGrid, Search, Users, Settings, BookOpen } from 'lucide-react';
+import { LayoutGrid, Users, Settings, BookOpen } from 'lucide-react';
 
 interface NavItemProps {
   icon: React.ReactNode;
@@ -45,7 +45,6 @@ export const Sidebar = () => {
       {/* Navigation */}
       <nav className="flex-1 space-y-1">
         <NavItem icon={<LayoutGrid size={20}/>} label="Home/Feed" href="/feed" />
-        <NavItem icon={<Search size={20}/>} label="Explore" href="/explore" />
         <NavItem icon={<Users size={20}/>} label="My Agents" href="/my-agents" />
         
         <div className="pt-4 pb-2 px-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">
