@@ -1,7 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
-import { embed } from "@/lib/gemini";
+import { embed } from "@/lib/ai";
 import type { SearchMatch } from "@/lib/types";
 
 /**
@@ -9,7 +9,7 @@ import type { SearchMatch } from "@/lib/types";
  * PERSON B: import and call this from the Explore/Feed search bar:
  *   const results = await searchAssets("summarize legal contracts");
  *
- * Embeds the query with Gemini, then calls the match_assets() RPC
+ * Embeds the query with OpenRouter, then calls the match_assets() RPC
  * (cosine similarity over pgvector). Returns same-org matches only (RLS).
  */
 export async function searchAssets(
@@ -25,7 +25,7 @@ export async function searchAssets(
   try {
     queryEmbedding = await embed(trimmed);
   } catch {
-    // No Gemini key / embed failure → graceful empty result rather than a crash.
+    // No OpenRouter key / embed failure → graceful empty result rather than a crash.
     return [];
   }
 

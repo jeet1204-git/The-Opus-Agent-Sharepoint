@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { requireProfile } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
-import { embed } from "@/lib/gemini";
+import { embed } from "@/lib/ai";
 import {
   validateContract,
   hasBlockingErrors,
@@ -65,7 +65,7 @@ export async function createAsset(
     file_url = path;
   }
 
-  // 3. Embedding (graceful if no Gemini key yet)
+  // 3. Embedding (graceful if no OpenRouter key yet)
   let embedding: number[] | null = null;
   try {
     const text = [

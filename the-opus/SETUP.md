@@ -17,8 +17,8 @@
    - **Project URL** → `NEXT_PUBLIC_SUPABASE_URL`
    - **anon / public** key → `NEXT_PUBLIC_SUPABASE_ANON_KEY`
    - **service_role** key → `SUPABASE_SERVICE_ROLE_KEY`  (keep secret!)
-2. From **Google AI Studio → API Keys**: copy your key → `GEMINI_API_KEY`.
-3. In `the-opus/`, run `cp .env.example .env.local` and paste the four values in.
+2. Paste the **OpenRouter** key the organizers gave us → `OPENROUTER_API_KEY` (powers embeddings + generation).
+3. In `the-opus/`, run `cp .env.example .env.local` and paste the values in.
 
 > `.env.local` is gitignored — never commit it. Share keys with teammates over DM, not git.
 
