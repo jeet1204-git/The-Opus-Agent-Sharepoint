@@ -3,12 +3,12 @@
 
 const BASE = "https://openrouter.ai/api/v1";
 
-// Embeddings: 1536-dim — MUST match vector(1536) in supabase/schema.sql.
+// Embeddings: 768-dim — MUST match vector(768) in supabase/schema.sql.
 const EMBED_MODEL = "openai/text-embedding-3-small";
 // Generation model (override with OPENROUTER_MODEL). Used by Phase 2 features.
 const GEN_MODEL = process.env.OPENROUTER_MODEL || "openai/gpt-4o-mini";
 
-export const EMBED_DIMENSIONS = 1536;
+export const EMBED_DIMENSIONS = 768;
 
 function key(): string {
   const k = process.env.OPENROUTER_API_KEY;
@@ -31,7 +31,7 @@ export async function embed(text: string): Promise<number[]> {
   const res = await fetch(`${BASE}/embeddings`, {
     method: "POST",
     headers: headers(),
-    body: JSON.stringify({ model: EMBED_MODEL, input: text }),
+    body: JSON.stringify({ model: EMBED_MODEL, input: text, dimensions: EMBED_DIMENSIONS }),
   });
   if (!res.ok) {
     throw new Error(`OpenRouter embed failed: ${res.status} ${await res.text()}`);

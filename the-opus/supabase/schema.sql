@@ -2,7 +2,7 @@
 -- THE OPUS — Agent SharePoint  |  Full database schema
 -- Paste this whole file into Supabase → SQL Editor → Run (once, on the NEW project).
 -- Postgres 17 + pgvector. Multi-tenant (org-scoped) with Row-Level Security.
--- Embeddings: OpenRouter openai/text-embedding-3-small => 1536 dimensions.
+-- Embeddings: OpenRouter openai/text-embedding-3-small (dimensions=768).
 -- ============================================================================
 
 -- 1. EXTENSIONS ---------------------------------------------------------------
@@ -40,7 +40,7 @@ create table if not exists public.assets (
   content         text,                 -- the actual prompt / config text
   file_url        text,                 -- optional uploaded file (storage)
   tags            text[] not null default '{}',
-  embedding       vector(1536),          -- OpenRouter text-embedding-3-small
+  embedding       vector(768),          -- OpenRouter text-embedding-3-small
   created_at      timestamptz not null default now(),
   updated_at      timestamptz not null default now()
 );
@@ -126,7 +126,7 @@ create trigger on_auth_user_created
 -- 5. SEMANTIC SEARCH RPC ------------------------------------------------------
 -- Embed the query in the app, pass the vector here. Returns same-org matches.
 create or replace function public.match_assets(
-  query_embedding vector(1536),
+  query_embedding vector(768),
   match_count int default 10
 )
 returns table (
