@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutGrid, Search, Users, Settings, BookOpen, UploadCloud, Shield } from 'lucide-react';
+import { LayoutGrid, Users, Settings, BookOpen, UploadCloud, Shield } from 'lucide-react';
 import { SignOutButton } from '@/components/SignOutButton';
 
 interface NavItemProps {
@@ -46,7 +46,6 @@ export const Sidebar = ({ isAdmin = false }: { isAdmin?: boolean }) => {
       {/* Navigation */}
       <nav className="flex-1 space-y-1">
         <NavItem icon={<LayoutGrid size={20}/>} label="Home/Feed" href="/feed" />
-        <NavItem icon={<Search size={20}/>} label="Explore" href="/explore" />
         <NavItem icon={<UploadCloud size={20}/>} label="Publish" href="/upload" />
         <NavItem icon={<Users size={20}/>} label="My Agents" href="/my-agents" />
 
