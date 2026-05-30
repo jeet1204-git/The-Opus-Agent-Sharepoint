@@ -3,7 +3,8 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutGrid, Users, Settings, BookOpen } from 'lucide-react';
+import { LayoutGrid, Users, Settings, BookOpen, UploadCloud, Shield } from 'lucide-react';
+import { SignOutButton } from '@/components/SignOutButton';
 
 interface NavItemProps {
   icon: React.ReactNode;
@@ -17,11 +18,11 @@ const NavItem = ({ icon, label, href }: NavItemProps) => {
   const isActive = pathname === href;
 
   return (
-    <Link 
-      href={href} 
+    <Link
+      href={href}
       className={`flex items-center gap-3 px-3 py-2.5 rounded-md transition-all duration-200 ${
-        isActive 
-          ? 'bg-blue-600/10 text-blue-500 border border-blue-600/20' 
+        isActive
+          ? 'bg-blue-600/10 text-blue-500 border border-blue-600/20'
           : 'text-slate-400 hover:bg-slate-800 hover:text-white'
       }`}
     >
@@ -31,11 +32,11 @@ const NavItem = ({ icon, label, href }: NavItemProps) => {
   );
 };
 
-export const Sidebar = () => {
+export const Sidebar = ({ isAdmin = false }: { isAdmin?: boolean }) => {
   return (
-    <aside className="w-64 border-r border-slate-800 flex flex-col p-4 space-y-8 bg-[#0f172a]">
+    <aside className="w-64 border-r border-slate-800 flex flex-col p-4 bg-[#0f172a]">
       {/* Branding */}
-      <div className="flex items-center gap-2 px-2 py-4">
+      <div className="flex items-center gap-2 px-2 py-4 mb-4">
         <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center shadow-lg shadow-blue-900/20">
           <span className="font-bold text-white">O</span>
         </div>
@@ -45,15 +46,24 @@ export const Sidebar = () => {
       {/* Navigation */}
       <nav className="flex-1 space-y-1">
         <NavItem icon={<LayoutGrid size={20}/>} label="Home/Feed" href="/feed" />
+        <NavItem icon={<UploadCloud size={20}/>} label="Publish" href="/upload" />
         <NavItem icon={<Users size={20}/>} label="My Agents" href="/my-agents" />
-        
+
         <div className="pt-4 pb-2 px-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">
           Manage
         </div>
-        
+
+        {isAdmin && (
+          <NavItem icon={<Shield size={20}/>} label="Admin" href="/admin" />
+        )}
         <NavItem icon={<Settings size={20}/>} label="Settings" href="/settings" />
         <NavItem icon={<BookOpen size={20}/>} label="Documentation" href="/documentation" />
       </nav>
+
+      {/* Sign out pinned to bottom */}
+      <div className="border-t border-slate-800 pt-2">
+        <SignOutButton />
+      </div>
     </aside>
   );
 };
