@@ -1,42 +1,48 @@
+import Link from 'next/link';
 import { Trophy, Sparkles, TrendingUp, Heart, Download, Cpu } from 'lucide-react';
+import { createClient } from '@/lib/supabase/server';
+import { requireProfile } from '@/lib/auth';
 
-const AGENTS = [
-  {
-    id: '1',
-    name: 'Legal Brief Summarizer',
-    author: 'Sarah Chen',
-    tags: ['LEGAL', 'LLM'],
-    description: 'Condense complex legal filings into actionable bullet points.',
-    likes: 1240,
-    downloads: 5200,
-    model: 'GPT-4o',
-    featured: true,
-  },
-  {
-    id: '2',
-    name: 'Marketing Copy Generator',
-    author: 'David Lee',
-    tags: ['MARKETING', 'SEO'],
-    description: 'Generate high-converting ad copy for social media campaigns.',
-    likes: 890,
-    downloads: 3100,
-    model: 'Claude 3.5 Sonnet',
-    featured: false,
-  },
-  {
-    id: '3',
-    name: 'Code Review Buddy',
-    author: 'Alex River',
-    tags: ['ENGINEERING', 'TS'],
-    description: 'Analyzes pull requests for security vulnerabilities and style.',
-    likes: 2100,
-    downloads: 12400,
-    model: 'Llama 3',
-    featured: false,
-  }
-];
+export default async function FeedPage() {
+  const profile = await requireProfile();
+  const supabase = await createClient();
 
-export default function FeedPage() {
+  const { data: rows } = await supabase
+    .from('assets')
+    .select('id, title, description, tags, metadata, type, created_at, profiles!owner_id(full_name), likes(count), usages(count)')
+    .order('created_at', { ascending: false });
+
+  type Row = {
+    id: string; title: string; description: string | null; tags: string[] | null;
+    metadata: { purpose?: string; framework?: string } | null; type: string;
+    profiles: { full_name: string | null } | null;
+    likes: { count: number }[]; usages: { count: number }[];
+  };
+
+  const agents = ((rows ?? []) as unknown as Row[]).map((a) => ({
+    id: a.id,
+    name: a.title,
+    author: a.profiles?.full_name ?? 'Unknown',
+    tags: (a.tags ?? []).map((t) => t.toUpperCase()).slice(0, 3),
+    description: a.description || a.metadata?.purpose || '',
+    likes: a.likes?.[0]?.count ?? 0,
+    downloads: a.usages?.[0]?.count ?? 0,
+    model: a.metadata?.framework || a.type,
+    featured: false,
+  }));
+
+  // Highlight the most-endorsed agent.
+  const byLikes = [...agents].sort((x, y) => y.likes - x.likes);
+  if (byLikes[0]) byLikes[0].featured = true;
+  const trending = byLikes.slice(0, 3);
+
+  // Leaderboard from real contributions.
+  const counts = new Map<string, number>();
+  agents.forEach((a) => counts.set(a.author, (counts.get(a.author) ?? 0) + 1));
+  const leaders = [...counts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 4);
+
+  const firstName = (profile.full_name ?? 'there').split(' ')[0];
+
   return (
     <div className="flex flex-col min-h-screen bg-[#0b1120]">
       <div className="flex flex-col xl:flex-row flex-1 overflow-hidden">
@@ -50,36 +56,42 @@ export default function FeedPage() {
                 <Sparkles size={14} className="text-blue-400" /> Trending Now
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {AGENTS.slice(0, 3).map((agent, i) => (
+                {trending.map((agent, i) => (
                   <TrendingCard key={agent.id} agent={agent} rank={i + 1} />
                 ))}
               </div>
             </div>
 
             {/* MAIN FEED */}
-            <h2 className="text-2xl font-bold mb-1 text-white">Welcome, Sarah!</h2>
+            <h2 className="text-2xl font-bold mb-1 text-white">Welcome, {firstName}!</h2>
             <p className="text-slate-500 mb-8 text-sm uppercase tracking-widest">Explore all Agents</p>
-            
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {AGENTS.map((agent) => (
-                <AgentCard key={agent.id} {...agent} />
-              ))}
-            </div>
+
+            {agents.length === 0 ? (
+              <div className="rounded-xl border border-dashed border-slate-700 p-10 text-center text-slate-500">
+                No agents yet. <Link href="/upload" className="text-blue-400">Publish the first one →</Link>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {agents.map((agent) => (
+                  <AgentCard key={agent.id} {...agent} />
+                ))}
+              </div>
+            )}
           </div>
         </section>
 
         {/* SIDEBAR (Now only Leaderboard) */}
         <aside className="w-full xl:w-80 border-t xl:border-t-0 xl:border-l border-slate-800 p-6 bg-[#0f172a]">
-          <LeaderboardSection />
+          <LeaderboardSection leaders={leaders} />
         </aside>
       </div>
     </div>
   );
-};
+}
 
 // New Component for the Top Row
 const TrendingCard = ({ agent, rank }: any) => (
-  <div className="relative group p-4 rounded-xl bg-slate-900/40 border border-slate-800 hover:border-blue-500/50 transition-all cursor-pointer overflow-hidden">
+  <Link href={`/agent/${agent.id}`} className="relative group p-4 rounded-xl bg-slate-900/40 border border-slate-800 hover:border-blue-500/50 transition-all cursor-pointer overflow-hidden block">
     <div className="absolute top-0 right-0 p-2 opacity-10 group-hover:opacity-20 transition-opacity">
       <TrendingUp size={40} />
     </div>
@@ -96,13 +108,13 @@ const TrendingCard = ({ agent, rank }: any) => (
         </p>
       </div>
     </div>
-  </div>
+  </Link>
 );
 
-const AgentCard = ({ name, author, tags, description, likes, downloads, model, featured }: any) => (
-  <div className={`p-6 rounded-xl border transition-all hover:border-slate-600 group flex flex-col ${
-    featured 
-      ? 'bg-blue-900/10 border-blue-500/50 ring-1 ring-blue-500/50' 
+const AgentCard = ({ id, name, author, tags, description, likes, downloads, model, featured }: any) => (
+  <Link href={`/agent/${id}`} className={`p-6 rounded-xl border transition-all hover:border-slate-600 group flex flex-col ${
+    featured
+      ? 'bg-blue-900/10 border-blue-500/50 ring-1 ring-blue-500/50'
       : 'bg-slate-900/50 border-slate-800'
   }`}>
     <div className="flex justify-between items-start mb-4 gap-2">
@@ -142,21 +154,21 @@ const AgentCard = ({ name, author, tags, description, likes, downloads, model, f
           {downloads.toLocaleString()}
         </div>
       </div>
-      <button className="bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold px-4 py-2 rounded transition-all active:scale-95 shadow-lg shadow-blue-900/20">
-        RUN NOW
-      </button>
+      <span className="bg-blue-600 group-hover:bg-blue-500 text-white text-xs font-bold px-4 py-2 rounded transition-all shadow-lg shadow-blue-900/20">
+        VIEW
+      </span>
     </div>
-  </div>
+  </Link>
 );
 
-const LeaderboardSection = () => (
+const LeaderboardSection = ({ leaders }: { leaders: [string, number][] }) => (
   <div>
     <h3 className="flex items-center gap-2 text-xs font-bold mb-6 uppercase tracking-[0.2em] text-slate-500">
       <Trophy size={14} className="text-yellow-500" /> Top Contributors
     </h3>
     <div className="space-y-5">
-      {['Sarah Chen', 'David Lee', 'Alex River', 'Jordan M.'].map((name, i) => (
-        <div key={i} className="flex items-center justify-between group cursor-pointer">
+      {leaders.map(([name, n], i) => (
+        <div key={name} className="flex items-center justify-between group cursor-pointer">
           <div className="flex items-center gap-3">
             <div className="relative">
                 <div className="w-9 h-9 bg-slate-800 rounded-full border border-slate-700 group-hover:border-slate-500 transition-colors" />
@@ -167,7 +179,7 @@ const LeaderboardSection = () => (
             <p className="text-sm font-medium text-slate-300 group-hover:text-white transition-colors">{name}</p>
           </div>
           <div className="text-[10px] font-mono text-slate-600">
-            {10 - i} agents
+            {n} agent{n === 1 ? '' : 's'}
           </div>
         </div>
       ))}

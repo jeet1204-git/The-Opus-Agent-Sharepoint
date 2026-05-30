@@ -1,48 +1,44 @@
-import { Trophy, TrendingUp, Heart, Download, Cpu, Sparkles, Plus } from 'lucide-react';
+import { Trophy, Heart, Download, Cpu, Plus } from 'lucide-react';
 import Link from 'next/link';
+import { createClient } from '@/lib/supabase/server';
+import { requireProfile } from '@/lib/auth';
 
-// 1. Personalized Data Object for Sarah's Agents
-const MY_AGENTS = [
-  {
-    id: '1',
-    name: 'Legal Brief Summarizer',
-    author: 'Sarah Chen',
-    tags: ['LEGAL', 'LLM'],
-    description: 'Condense complex legal filings into actionable bullet points.',
-    likes: 1240,
-    downloads: 5200,
-    model: 'GPT-4o',
-    featured: true,
-  },
-  {
-    id: '4',
-    name: 'Data Pipeline Monitor',
-    author: 'Sarah Chen',
-    tags: ['DEVOP', 'AUTOMATION'],
-    description: 'Watches internal database streams and alerts via webhook on structure drift.',
-    likes: 412,
-    downloads: 1850,
-    model: 'Claude 3.5 Sonnet',
-    featured: false,
-  },
-  {
-    id: '5',
-    name: 'Acme Brand Voice Validator',
-    author: 'Sarah Chen',
-    tags: ['MARKETING', 'COMPLIANCE'],
-    description: 'Scans public copy decks to ensure copy aligns with company compliance standards.',
-    likes: 95,
-    downloads: 620,
-    model: 'Llama 3',
-    featured: false,
-  }
-];
+export default async function MyAgentsPage() {
+  const profile = await requireProfile();
+  const supabase = await createClient();
 
-export default function MyAgentsPage() {
+  const { data: rows } = await supabase
+    .from('assets')
+    .select('id, title, description, tags, metadata, type, profiles!owner_id(full_name), likes(count), usages(count)')
+    .eq('owner_id', profile.id)
+    .order('created_at', { ascending: false });
+
+  type Row = {
+    id: string; title: string; description: string | null; tags: string[] | null;
+    metadata: { purpose?: string; framework?: string } | null; type: string;
+    profiles: { full_name: string | null } | null;
+    likes: { count: number }[]; usages: { count: number }[];
+  };
+
+  const agents = ((rows ?? []) as unknown as Row[]).map((a) => ({
+    id: a.id,
+    name: a.title,
+    author: a.profiles?.full_name ?? 'You',
+    tags: (a.tags ?? []).map((t) => t.toUpperCase()).slice(0, 3),
+    description: a.description || a.metadata?.purpose || '',
+    likes: a.likes?.[0]?.count ?? 0,
+    downloads: a.usages?.[0]?.count ?? 0,
+    model: a.metadata?.framework || a.type,
+    featured: false,
+  }));
+
+  const totalEndorsements = agents.reduce((s, a) => s + a.likes, 0);
+  const totalRuns = agents.reduce((s, a) => s + a.downloads, 0);
+
   return (
     <div className="flex flex-col min-h-screen bg-[#0b1120]">
       <div className="flex flex-col xl:flex-row flex-1 overflow-hidden">
-        
+
         {/* MAIN CONTENT AREA */}
         <section className="flex-1 overflow-y-auto p-4 md:p-8">
           <div className="max-w-5xl mx-auto xl:mx-0">
@@ -53,54 +49,39 @@ export default function MyAgentsPage() {
                 <h2 className="text-2xl font-bold mb-1 text-white">Your Workspace</h2>
                 <p className="text-slate-500 text-sm uppercase tracking-widest">Manage your built agents</p>
               </div>
-              <button className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold px-4 py-2.5 rounded-lg transition-colors shadow-lg shadow-blue-900/20">
+              <Link href="/upload" className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold px-4 py-2.5 rounded-lg transition-colors shadow-lg shadow-blue-900/20">
                 <Plus size={16} /> Create New Agent
-              </button>
+              </Link>
             </div>
-            
+
             {/* MAIN PERSONAL GRID */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {MY_AGENTS.map((agent) => (
-                <AgentCard key={agent.id} {...agent} />
-              ))}
-            </div>
+            {agents.length === 0 ? (
+              <div className="rounded-xl border border-dashed border-slate-700 p-10 text-center text-slate-500">
+                You haven&apos;t published any agents yet. <Link href="/upload" className="text-blue-400">Publish one →</Link>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {agents.map((agent) => (
+                  <AgentCard key={agent.id} {...agent} />
+                ))}
+              </div>
+            )}
           </div>
         </section>
 
         {/* SIDEBAR (Personal Analytics & Metrics) */}
         <aside className="w-full xl:w-80 border-t xl:border-t-0 xl:border-l border-slate-800 p-6 bg-[#0f172a]">
-          <AnalyticsSection />
+          <AnalyticsSection agents={agents.length} endorsements={totalEndorsements} runs={totalRuns} />
         </aside>
       </div>
     </div>
   );
-};
-
-const TrendingCard = ({ agent, rank }: any) => (
-  <div className="relative group p-4 rounded-xl bg-slate-900/40 border border-slate-800 hover:border-blue-500/50 transition-all cursor-pointer overflow-hidden">
-    <div className="absolute top-0 right-0 p-2 opacity-10 group-hover:opacity-20 transition-opacity text-slate-400">
-      <TrendingUp size={40} />
-    </div>
-    <div className="relative z-10 flex items-center gap-3">
-      <span className="text-2xl font-black text-slate-700 group-hover:text-blue-500/50 transition-colors">
-        0{rank}
-      </span>
-      <div className="min-w-0">
-        <h4 className="text-sm font-bold text-slate-200 truncate group-hover:text-white">
-          {agent.name}
-        </h4>
-        <p className="text-[10px] text-slate-500 uppercase tracking-tight">
-          {agent.model}
-        </p>
-      </div>
-    </div>
-  </div>
-);
+}
 
 const AgentCard = ({ id, name, author, tags, description, likes, downloads, model, featured }: any) => (
   <div className={`p-6 rounded-xl border transition-all hover:border-slate-600 group flex flex-col ${
-    featured 
-      ? 'bg-blue-900/10 border-blue-500/50 ring-1 ring-blue-500/50' 
+    featured
+      ? 'bg-blue-900/10 border-blue-500/50 ring-1 ring-blue-500/50'
       : 'bg-slate-900/50 border-slate-800'
   }`}>
     <div className="flex justify-between items-start mb-4 gap-2">
@@ -140,30 +121,30 @@ const AgentCard = ({ id, name, author, tags, description, likes, downloads, mode
           {downloads.toLocaleString()}
         </div>
       </div>
-      <button className="bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold px-4 py-2 rounded transition-all active:scale-95 shadow-lg shadow-blue-900/20">
-        EDIT AGENT
-      </button>
+      <Link href={`/agent/${id}`} className="bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold px-4 py-2 rounded transition-all active:scale-95 shadow-lg shadow-blue-900/20">
+        VIEW
+      </Link>
     </div>
   </div>
 );
 
-const AnalyticsSection = () => (
+const AnalyticsSection = ({ agents, endorsements, runs }: { agents: number; endorsements: number; runs: number }) => (
   <div>
     <h3 className="flex items-center gap-2 text-xs font-bold mb-6 uppercase tracking-[0.2em] text-slate-500">
       <Trophy size={14} className="text-yellow-500" /> Workspace Impact
     </h3>
     <div className="space-y-5">
       <div className="p-4 rounded-xl bg-slate-900/30 border border-slate-800/80">
-        <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Total Downloads Given</p>
-        <p className="text-2xl font-mono font-bold text-white">7,670</p>
+        <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Agents Published</p>
+        <p className="text-2xl font-mono font-bold text-white">{agents}</p>
       </div>
       <div className="p-4 rounded-xl bg-slate-900/30 border border-slate-800/80">
-        <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Active Integrations</p>
-        <p className="text-2xl font-mono font-bold text-white">3 Running</p>
+        <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Total Endorsements</p>
+        <p className="text-2xl font-mono font-bold text-white">{endorsements.toLocaleString()}</p>
       </div>
       <div className="p-4 rounded-xl bg-slate-900/30 border border-slate-800/80">
-        <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Compute Used (Mo.)</p>
-        <p className="text-2xl font-mono font-bold text-emerald-400">84.2%</p>
+        <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Total Runs</p>
+        <p className="text-2xl font-mono font-bold text-emerald-400">{runs.toLocaleString()}</p>
       </div>
     </div>
   </div>
