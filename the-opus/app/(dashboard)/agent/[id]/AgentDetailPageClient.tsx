@@ -1,106 +1,118 @@
 import React from 'react';
-import { 
-  Star, Download, Zap, Play, Copy, 
-  ExternalLink, Code2, MessageSquare, 
-  ChevronRight, Info
+import {
+  Star, Zap, Copy, Code2, MessageSquare, ChevronRight, Info, Heart, AlertTriangle, GitBranch
 } from 'lucide-react';
+import { RunAgent } from '@/components/RunAgent';
+import { LikeButton } from '@/components/LikeButton';
+import { ReviewForm } from '@/components/ReviewForm';
 
-export default async function AgentDetailPageClient({ agent_data }: any) {  
+export default function AgentDetailPageClient({ agent, liked }: any) {
+  const meta = agent.metadata ?? {};
+  const author = agent.profiles?.full_name ?? 'Unknown';
+  const reviews = agent.reviews ?? [];
+  const reviewCount = reviews.length;
+  const avgRating = reviewCount
+    ? (reviews.reduce((s: number, r: any) => s + (r.rating ?? 0), 0) / reviewCount).toFixed(1)
+    : '—';
+  const executions = agent.usages?.[0]?.count ?? 0;
+  const likeCount = agent.likes?.[0]?.count ?? 0;
+  const versions = agent.versions ?? [];
+  const tools: string[] = meta.tools ?? [];
+
   return (
     <div className="flex h-full overflow-hidden bg-[#0b1120]">
       {/* LEFT CONTENT SCROLL AREA */}
       <div className="flex-1 overflow-y-auto p-8 custom-scrollbar">
         {/* BREADCRUMBS */}
         <nav className="flex items-center gap-2 text-xs text-slate-500 mb-6 uppercase tracking-wider">
-          <span>Explore</span> <ChevronRight size={12} />
           <span>Agents</span> <ChevronRight size={12} />
-          <span className="text-blue-400 font-semibold">Legal Case Analyzer</span>
+          <span className="text-blue-400 font-semibold">{agent.title}</span>
         </nav>
 
         {/* HERO SECTION */}
-        <div className="flex justify-between items-start mb-8">
+        <div className="flex justify-between items-start mb-8 gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-white mb-2">
-              {agent_data.id}
-            </h1>
+            <h1 className="text-3xl font-bold text-white mb-2">{agent.title}</h1>
             <div className="flex items-center gap-4 text-sm">
-              <span className="text-slate-500 font-mono">#LCA103</span>
-              <span className="text-slate-400">Author: <span className="text-slate-200 underline cursor-pointer">Sarah Chen</span></span>
+              <span className="text-[10px] bg-slate-800 px-2 py-0.5 rounded text-slate-400 border border-slate-700 uppercase">{agent.type}</span>
+              <span className="text-slate-400">Author: <span className="text-slate-200">{author}</span></span>
             </div>
           </div>
-          <div className="flex gap-3">
-            <button className="bg-blue-600 hover:bg-blue-500 text-white font-bold px-6 py-2 rounded flex items-center gap-2">
-              <Play size={18} fill="white" /> ACTIVATE AGENT
-            </button>
-            <button className="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 px-4 py-2 rounded">
-              DEPLOY/CLONE
-            </button>
+          <div className="flex gap-3 shrink-0">
+            <LikeButton assetId={agent.id} initialLiked={liked} initialCount={likeCount} />
+            <div className="flex items-center gap-1.5 px-3 py-2 bg-slate-950 border border-slate-800 rounded text-xs font-mono text-blue-400">
+              {meta.framework || 'raw'}
+            </div>
           </div>
         </div>
 
         {/* TOP STATS BAR */}
         <div className="flex gap-8 border-b border-slate-800 pb-8 mb-8">
-          <StatHighlight icon={<Star className="text-yellow-500" size={18} />} label="4.9/5 stars" sub="52 Reviews" />
-          <StatHighlight icon={<Download className="text-blue-400" size={18} />} label="380" sub="Downloads" />
-          <StatHighlight icon={<Zap className="text-purple-400" size={18} />} label="1.7k" sub="Executions" />
+          <StatHighlight icon={<Star className="text-yellow-500" size={18} />} label={`${avgRating}/5`} sub={`${reviewCount} Reviews`} />
+          <StatHighlight icon={<Heart className="text-pink-400" size={18} />} label={String(likeCount)} sub="Endorsements" />
+          <StatHighlight icon={<Zap className="text-purple-400" size={18} />} label={String(executions)} sub="Runs" />
         </div>
 
         {/* DESCRIPTION BLOCK */}
-        <div className="bg-slate-900/40 border border-slate-800 rounded-xl p-6 mb-8">
+        <div className="bg-slate-900/40 border border-slate-800 rounded-xl p-6 mb-6">
           <div className="flex justify-between items-center mb-4">
-            <h3 className="text-xs font-bold uppercase tracking-widest text-slate-400">Agent Description & Use Cases</h3>
-            <span className="text-[10px] bg-slate-800 px-2 py-0.5 rounded text-slate-500 border border-slate-700">README.md</span>
+            <h3 className="text-xs font-bold uppercase tracking-widest text-slate-400">Purpose & Use Cases</h3>
+            <span className="text-[10px] bg-slate-800 px-2 py-0.5 rounded text-slate-500 border border-slate-700">contract</span>
           </div>
-          <p className="text-slate-300 leading-relaxed text-sm">
-            Legal Case Analyzer is a specialized LLM wrapper designed to ingest complex legal texts and provide structured summaries. 
-            It excels at vectorizing assessed issues and comparing jurisdictional precedents to ensure compliance and risk mitigation.
-          </p>
-          <p className="text-[10px] text-slate-600 mt-4 italic font-mono uppercase">AI-Generated Description</p>
+          <p className="text-slate-300 leading-relaxed text-sm">{meta.purpose || agent.description || 'No description provided.'}</p>
+          {meta.requirements && (
+            <p className="text-xs text-slate-400 mt-4"><span className="text-slate-500 font-bold uppercase">Requirements: </span>{meta.requirements}</p>
+          )}
+          {meta.when_not_to_use && (
+            <div className="mt-4 flex items-start gap-2 rounded-md border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-xs text-amber-300">
+              <AlertTriangle size={14} className="mt-0.5 shrink-0" />
+              <span><span className="font-bold uppercase">When NOT to use: </span>{meta.when_not_to_use}</span>
+            </div>
+          )}
         </div>
 
-        {/* PROMPT & INSTRUCTIONS GRID */}
+        {/* PROMPT + RUN GRID */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
           <div className="bg-slate-900 border border-slate-800 rounded-xl p-6">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xs font-bold uppercase tracking-widest text-slate-400">System Prompt</h3>
-              <Copy size={14} className="text-slate-600 cursor-pointer hover:text-white" />
+              <h3 className="text-xs font-bold uppercase tracking-widest text-slate-400">System Prompt / Config</h3>
+              <Copy size={14} className="text-slate-600" />
             </div>
-            <div className="font-mono text-sm text-blue-300/80 bg-black/30 p-4 rounded-lg border border-slate-800">
-              <span className="text-blue-500">SYSTEM:</span> Analyze the provided legal text for national information...
-            </div>
+            <pre className="font-mono text-xs text-blue-300/80 bg-black/30 p-4 rounded-lg border border-slate-800 max-h-64 overflow-auto whitespace-pre-wrap">
+              {agent.content || '(no content)'}
+            </pre>
           </div>
 
-          <div className="bg-slate-900 border border-slate-800 rounded-xl p-6">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xs font-bold uppercase tracking-widest text-slate-400">Input/Output Examples</h3>
-            </div>
-            <div className="space-y-3 text-xs">
-              <div className="p-3 bg-slate-800/50 rounded border border-slate-700">
-                <p className="text-slate-500 mb-1">INPUT:</p>
-                <p className="text-slate-300 italic">"Provide a brief on the current tenant law..."</p>
-              </div>
-              <div className="p-3 bg-slate-800/50 rounded border border-slate-700">
-                <p className="text-slate-500 mb-1">OUTPUT:</p>
-                <p className="text-slate-300 italic">"Based on Section 4 of the Civil Code..."</p>
-              </div>
-            </div>
-          </div>
+          {/* REAL one-click Run */}
+          <RunAgent assetId={agent.id} />
         </div>
 
         {/* COMMUNITY SECTION */}
-        <div className="mt-12">
+        <div className="mt-4">
           <h3 className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-6 flex items-center gap-2">
-            <MessageSquare size={16} /> Reviews & Community Discussion
+            <MessageSquare size={16} /> Reviews & Endorsements ({reviewCount})
           </h3>
+          <div className="mb-6">
+            <ReviewForm assetId={agent.id} />
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Mock Review Card */}
-            <ReviewCard name="Maria S." date="18 hrs ago" content="This wrapper saved our team 4 hours of manual doc review this week. The output format is perfect for our Jira tickets." />
-            <ReviewCard name="David K." date="1 day ago" content="Impressive precision on jurisdiction detection, though it struggles with v2.1 prompts occasionally." />
+            {reviews.length === 0 && (
+              <p className="text-sm text-slate-500">No reviews yet — be the first to endorse this agent.</p>
+            )}
+            {reviews.map((r: any) => (
+              <ReviewCard
+                key={r.id}
+                name={r.profiles?.full_name ?? 'Someone'}
+                date={new Date(r.created_at).toLocaleDateString()}
+                rating={r.rating}
+                content={r.comment ?? ''}
+              />
+            ))}
           </div>
         </div>
       </div>
 
-      {/* RIGHT SIDEBAR (Configuration & Guide) */}
+      {/* RIGHT SIDEBAR (Configuration & Versions) */}
       <aside className="w-80 border-l border-slate-800 p-8 space-y-8 bg-[#0f172a]/50 overflow-y-auto">
         {/* CONFIG SECTION */}
         <div>
@@ -108,16 +120,33 @@ export default async function AgentDetailPageClient({ agent_data }: any) {
             <Info size={14} /> Configuration
           </h3>
           <div className="space-y-4">
-            <ConfigRow label="Intended Model" value="GPT-4" />
-            <ConfigRow label="Temperature" value="0.5" />
-            <ConfigRow label="Max Tokens" value="2048" />
+            <ConfigRow label="Type" value={agent.type} />
+            <ConfigRow label="Framework" value={meta.framework || 'raw'} />
             <div className="pt-2">
-              <p className="text-[10px] font-bold text-slate-500 uppercase mb-2">Functions</p>
+              <p className="text-[10px] font-bold text-slate-500 uppercase mb-2">Tools</p>
               <div className="flex flex-wrap gap-2">
-                <span className="text-[10px] bg-blue-900/30 text-blue-400 px-2 py-1 rounded">LegalSearch</span>
-                <span className="text-[10px] bg-blue-900/30 text-blue-400 px-2 py-1 rounded">TextCompare</span>
+                {tools.length === 0 && <span className="text-[10px] text-slate-600">none declared</span>}
+                {tools.map((t) => (
+                  <span key={t} className="text-[10px] bg-blue-900/30 text-blue-400 px-2 py-1 rounded">{t}</span>
+                ))}
               </div>
             </div>
+          </div>
+        </div>
+
+        {/* VERSIONS */}
+        <div>
+          <h3 className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-4 flex items-center gap-2">
+            <GitBranch size={14} /> Versions
+          </h3>
+          <div className="space-y-3">
+            {versions.length === 0 && <p className="text-[10px] text-slate-600">No versions.</p>}
+            {versions.map((v: any) => (
+              <div key={v.id} className="flex justify-between items-center text-sm border-b border-slate-800 pb-2">
+                <span className="text-slate-200 font-mono">{v.version_label}</span>
+                <span className="text-[10px] text-slate-500">{new Date(v.created_at).toLocaleDateString()}</span>
+              </div>
+            ))}
           </div>
         </div>
 
@@ -127,15 +156,14 @@ export default async function AgentDetailPageClient({ agent_data }: any) {
             <Code2 size={14} /> Implementation
           </h3>
           <div className="space-y-6">
-            <Step title="Set Up API Key" code="export OPUS_KEY='your_key_here'" />
-            <Step title="Initialize Client" code="opus init --agent=lca103" />
-            <Step title="Run Analysis" code="opus run 'contract_v1.pdf'" />
+            <Step title="Copy the prompt/config" code="(from System Prompt panel)" />
+            <Step title="Or run it here" code="use the Run panel →" />
           </div>
         </div>
       </aside>
     </div>
   );
-};
+}
 
 // --- Sub-components ---
 
@@ -149,14 +177,14 @@ const StatHighlight = ({ icon, label, sub }: any) => (
   </div>
 );
 
-const ConfigRow = ({ label, value }: { label: string, value: string }) => (
+const ConfigRow = ({ label, value }: { label: string; value: string }) => (
   <div className="flex justify-between items-center text-sm border-b border-slate-800 pb-2">
     <span className="text-slate-500">{label}:</span>
     <span className="text-slate-200 font-mono">{value}</span>
   </div>
 );
 
-const Step = ({ title, code }: { title: string, code: string }) => (
+const Step = ({ title, code }: { title: string; code: string }) => (
   <div className="space-y-2">
     <p className="text-xs font-semibold text-slate-300">{title}</p>
     <div className="bg-black/50 border border-slate-700 rounded p-3 font-mono text-[11px] text-blue-400 flex justify-between group">
@@ -166,7 +194,7 @@ const Step = ({ title, code }: { title: string, code: string }) => (
   </div>
 );
 
-const ReviewCard = ({ name, date, content }: any) => (
+const ReviewCard = ({ name, date, content, rating }: any) => (
   <div className="bg-slate-900/50 border border-slate-800 p-4 rounded-xl">
     <div className="flex justify-between items-start mb-3">
       <div className="flex items-center gap-2">
@@ -177,11 +205,9 @@ const ReviewCard = ({ name, date, content }: any) => (
         </div>
       </div>
       <div className="flex text-yellow-500">
-        <Star size={10} fill="currentColor" />
-        <Star size={10} fill="currentColor" />
-        <Star size={10} fill="currentColor" />
-        <Star size={10} fill="currentColor" />
-        <Star size={10} fill="currentColor" />
+        {Array.from({ length: rating ?? 0 }).map((_, i) => (
+          <Star key={i} size={10} fill="currentColor" />
+        ))}
       </div>
     </div>
     <p className="text-xs text-slate-400 leading-relaxed italic">"{content}"</p>

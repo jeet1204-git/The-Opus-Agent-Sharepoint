@@ -1,51 +1,53 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
-import { usePathname } from 'next/navigation';
+import { useState, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import { Search, Bell, User, Settings } from 'lucide-react';
 import { SignOutButton } from './SignOutButton';
 
-export default function Header() {
+export default function Header({ userName = 'User' }: { userName?: string }) {
     const [isOpen, setIsOpen] = useState(false);
     const [isSearching, setIsSearching] = useState(false);
+    const [q, setQ] = useState('');
     const searchRef = useRef<HTMLInputElement>(null);
-    const pathname = usePathname();
+    const router = useRouter();
 
-    // Reset all state whenever the route changes
-    useEffect(() => {
-        setIsOpen(false);
-        setIsSearching(false);
-        searchRef.current?.blur();
-    }, []);
+    function onSubmit(e: React.FormEvent) {
+        e.preventDefault();
+        const query = q.trim();
+        if (query) router.push(`/search?q=${encodeURIComponent(query)}`);
+    }
 
     return (
         <div className="border-b border-slate-800">
-            <div 
+            <div
                 className={`fixed inset-0 bg-black/60 transition-opacity duration-300 pointer-events-none ${
                     isSearching ? 'opacity-100 z-40' : 'opacity-0 z-0'
-                }`} 
+                }`}
             />
 
             <header className="h-16 border-b border-slate-800 flex items-center justify-between px-8 bg-[#0f172a] backdrop-blur-md relative z-50">
-                <div className={`relative transition-all duration-300 ${
+                <form onSubmit={onSubmit} className={`relative transition-all duration-300 ${
                     isSearching ? 'flex-1 md:mr-12' : 'w-96'
                 }`}>
                     <Search className="absolute left-3 top-2.5 text-slate-500" size={18} />
                     <input
                         ref={searchRef}
                         type="text"
-                        placeholder="Search agents..."
+                        value={q}
+                        onChange={(e) => setQ(e.target.value)}
+                        placeholder="Search agents by what you need… (semantic)"
                         onFocus={() => setIsSearching(true)}
                         onBlur={() => setIsSearching(false)}
                         className="w-full bg-slate-900 border border-slate-700 rounded-md py-2 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-white transition-all"
                     />
-                </div>
+                </form>
 
                 <div className="flex items-center gap-4 shrink-0">
                     <Bell size={20} className="text-slate-400 cursor-pointer hover:text-white transition-colors" />
-                    
+
                     <div className="relative">
-                        <button 
+                        <button
                             onMouseDown={(e) => {
                                 e.preventDefault();
                                 setIsOpen(prev => !prev);
@@ -53,7 +55,7 @@ export default function Header() {
                             className="flex items-center gap-2 bg-slate-800 hover:bg-slate-700 transition-colors px-3 py-1.5 rounded-full cursor-pointer focus:outline-none select-none"
                         >
                             <div className="w-6 h-6 bg-slate-500 rounded-full" />
-                            <span className="text-sm font-medium text-white">Sarah J.</span>
+                            <span className="text-sm font-medium text-white">{userName}</span>
                         </button>
 
                         {isOpen && (
@@ -62,7 +64,7 @@ export default function Header() {
                                 <div className="absolute right-0 mt-2 w-56 rounded-md border border-slate-800 bg-slate-900 p-1 shadow-lg z-20 text-slate-200">
                                     <div className="px-3 py-2 border-b border-slate-800">
                                         <p className="text-xs text-slate-500">Signed in as</p>
-                                        <p className="text-sm font-semibold truncate text-white">Sarah J.</p>
+                                        <p className="text-sm font-semibold truncate text-white">{userName}</p>
                                     </div>
                                     <div className="py-1">
                                         <button className="w-full flex items-center gap-2 px-3 py-2 text-sm rounded-md hover:bg-slate-800 text-left transition-colors">
