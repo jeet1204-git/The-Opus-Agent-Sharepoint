@@ -1,9 +1,12 @@
 "use client";
 
-import { useActionState } from "react";
-import { UploadCloud, AlertTriangle, XCircle } from "lucide-react";
+import { useActionState, useState, useRef } from "react";
+import Link from "next/link";
+import { UploadCloud, AlertTriangle, XCircle, Copy, Loader2 } from "lucide-react";
 import { createAsset, type UploadState } from "./actions";
+import { searchAssets } from "@/lib/search";
 import type { ContractIssue } from "@/lib/validation";
+import type { SearchMatch } from "@/lib/types";
 
 const initial: UploadState = { ok: false, issues: [] };
 
@@ -37,14 +40,89 @@ const labelCls =
 export default function UploadPage() {
   const [state, formAction, pending] = useActionState(createAsset, initial);
 
+  // ── Live "about-to-duplicate" detector ──
+  const [dupes, setDupes] = useState<SearchMatch[]>([]);
+  const [checking, setChecking] = useState(false);
+  const draft = useRef({ title: "", purpose: "" });
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  function scheduleDupeCheck() {
+    if (timer.current) clearTimeout(timer.current);
+    timer.current = setTimeout(async () => {
+      const text = `${draft.current.title} ${draft.current.purpose}`.trim();
+      if (text.length < 8) {
+        setDupes([]);
+        return;
+      }
+      setChecking(true);
+      try {
+        const res = await searchAssets(text, 3);
+        setDupes(res.filter((r) => r.similarity >= 0.35));
+      } catch {
+        setDupes([]);
+      } finally {
+        setChecking(false);
+      }
+    }, 500);
+  }
+
+  const strongest = dupes[0];
+
   return (
     <>
       <header className="h-16 border-b border-slate-800 flex items-center gap-3 px-8 bg-[#0f172a]/50 backdrop-blur-md">
         <UploadCloud size={20} className="text-blue-500" />
         <h1 className="text-lg font-bold text-white">Publish an agent</h1>
+        {checking && (
+          <span className="flex items-center gap-1 text-xs text-slate-500">
+            <Loader2 size={12} className="animate-spin" /> checking for duplicates…
+          </span>
+        )}
       </header>
 
       <div className="flex-1 overflow-y-auto p-8 bg-[#0b1120]">
+        {/* The hero: duplicate detector */}
+        {dupes.length > 0 && (
+          <div className="mb-6 max-w-3xl rounded-xl border border-amber-500/40 bg-amber-500/10 p-5">
+            <div className="mb-3 flex items-center gap-2 text-amber-300">
+              <AlertTriangle size={18} />
+              <h3 className="font-bold">
+                {strongest && strongest.similarity >= 0.6
+                  ? "This may already exist — reuse instead of rebuilding?"
+                  : "Similar agents already in the registry"}
+              </h3>
+            </div>
+            <p className="mb-4 text-sm text-amber-200/80">
+              We found existing agents that look close to what you&apos;re describing. Reusing a
+              trusted one is faster than building from scratch.
+            </p>
+            <div className="space-y-2">
+              {dupes.map((d) => (
+                <Link
+                  key={d.id}
+                  href={`/agent/${d.id}`}
+                  className="flex items-center justify-between rounded-lg border border-slate-700 bg-slate-900/60 px-4 py-3 transition-colors hover:border-blue-500/50"
+                >
+                  <div>
+                    <p className="font-semibold text-white">{d.title}</p>
+                    <p className="text-xs text-slate-400">
+                      {d.metadata?.purpose ?? d.description ?? d.type}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="rounded-full bg-amber-500/20 px-2 py-0.5 text-xs font-bold text-amber-300">
+                      {Math.round(d.similarity * 100)}% match
+                    </span>
+                    <span className="flex items-center gap-1 text-xs font-medium text-blue-400">
+                      <Copy size={12} /> View &amp; reuse
+                    </span>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
+
         <form action={formAction} className="max-w-3xl space-y-6">
           {state.message && (
             <div className="rounded-md border border-red-500/30 bg-red-500/10 px-3 py-2 text-sm text-red-400">
@@ -64,7 +142,15 @@ export default function UploadPage() {
             </div>
             <div className="md:col-span-2">
               <label className={labelCls}>Title *</label>
-              <input name="title" className={inputCls} placeholder="Legal Brief Summarizer" />
+              <input
+                name="title"
+                className={inputCls}
+                placeholder="Legal Brief Summarizer"
+                onChange={(e) => {
+                  draft.current.title = e.target.value;
+                  scheduleDupeCheck();
+                }}
+              />
               <FieldHint issues={state.issues} field="title" />
             </div>
           </div>
@@ -81,7 +167,16 @@ export default function UploadPage() {
 
             <div>
               <label className={labelCls}>Purpose * (what it does)</label>
-              <textarea name="purpose" rows={2} className={inputCls} placeholder="Takes a legal brief and returns a structured summary with parties, claims, and risks." />
+              <textarea
+                name="purpose"
+                rows={2}
+                className={inputCls}
+                placeholder="Takes a legal brief and returns a structured summary with parties, claims, and risks."
+                onChange={(e) => {
+                  draft.current.purpose = e.target.value;
+                  scheduleDupeCheck();
+                }}
+              />
               <FieldHint issues={state.issues} field="purpose" />
             </div>
 
