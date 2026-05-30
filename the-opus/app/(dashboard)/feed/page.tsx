@@ -1,5 +1,4 @@
 import { Trophy, Sparkles, TrendingUp, Heart, Download, Cpu } from 'lucide-react';
-import Header from '@/components/Header';
 
 const AGENTS = [
   {
@@ -40,10 +39,7 @@ const AGENTS = [
 export default function FeedPage() {
   return (
     <div className="flex flex-col min-h-screen bg-[#0b1120]">
-      <Header />
-
       <div className="flex flex-col xl:flex-row flex-1 overflow-hidden">
-        
         {/* MAIN CONTENT AREA */}
         <section className="flex-1 overflow-y-auto p-4 md:p-8">
           <div>

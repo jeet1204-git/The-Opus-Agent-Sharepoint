@@ -10,10 +10,6 @@ export default async function AgentDetailPage({
 
   // const data = await fetchAgentFromDb(id); 
   const data = { id }; // Placeholder until we have a real data source
-  if (id != 'a') {
-    // Simulate a not found case
-    return <div className="p-8 text-center text-slate-400">Agent not found.</div>;
-  }
 
   return <AgentDetailPageClient agent_data={data} />;
 }
