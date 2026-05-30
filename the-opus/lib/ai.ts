@@ -5,8 +5,10 @@ const BASE = "https://openrouter.ai/api/v1";
 
 // Embeddings: 768-dim — MUST match vector(768) in supabase/schema.sql.
 const EMBED_MODEL = "openai/text-embedding-3-small";
-// Generation model (override with OPENROUTER_MODEL). Used by Phase 2 features.
-const GEN_MODEL = process.env.OPENROUTER_MODEL || "openai/gpt-4o-mini";
+// Generation model (override with OPENROUTER_MODEL). Used by Run + Phase 2 features.
+// Current as of 2026. Alternatives: anthropic/claude-opus-4.8 (max quality),
+// google/gemini-3.5-flash (cheapest/fastest), openai/gpt-5.5.
+const GEN_MODEL = process.env.OPENROUTER_MODEL || "anthropic/claude-sonnet-4.6";
 
 export const EMBED_DIMENSIONS = 768;
 
