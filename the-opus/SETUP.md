@@ -46,5 +46,11 @@ npm run dev
 ```
 Open http://localhost:3000 → you should be redirected to `/login`.
 
+## 6. Populate demo data (optional but recommended)
+Sign in as your admin user, then visit **http://localhost:3000/api/seed** once.
+It inserts ~8 realistic agents (with embeddings, if `OPENROUTER_API_KEY` is set) so
+the feed and semantic search have content for the demo. Safe to ignore if the org
+already has assets (it won't duplicate).
+
 ## Deploy (later)
 Vercel → import the repo → set **Root Directory = `the-opus`** → add the same env vars.
