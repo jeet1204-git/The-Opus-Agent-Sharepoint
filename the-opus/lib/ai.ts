@@ -5,10 +5,12 @@ const BASE = "https://openrouter.ai/api/v1";
 
 // Embeddings: 768-dim — MUST match vector(768) in supabase/schema.sql.
 const EMBED_MODEL = "openai/text-embedding-3-small";
-// Generation model (override with OPENROUTER_MODEL). Used by Run + Phase 2 features.
-// Current as of 2026. Alternatives: anthropic/claude-opus-4.8 (max quality),
-// google/gemini-3.5-flash (cheapest/fastest), openai/gpt-5.5.
+// Two tiers, chosen per use case (we have a limited shared credit budget):
+//  - QUALITY: user-facing generation a judge reads (e.g. Run an agent).
+//  - FAST:    structured/utility work (auto-fill metadata, eval scoring, classify).
+// Override either via env. Quality alts: anthropic/claude-opus-4.8 (max), openai/gpt-5.5.
 const GEN_MODEL = process.env.OPENROUTER_MODEL || "anthropic/claude-sonnet-4.6";
+const FAST_MODEL = process.env.OPENROUTER_FAST_MODEL || "google/gemini-3.5-flash";
 
 export const EMBED_DIMENSIONS = 768;
 
@@ -42,13 +44,12 @@ export async function embed(text: string): Promise<number[]> {
   return data.data[0].embedding as number[];
 }
 
-/** One-shot text generation (Phase 2: auto-metadata, run agent, eval). */
-export async function generate(prompt: string): Promise<string> {
+async function complete(prompt: string, model: string): Promise<string> {
   const res = await fetch(`${BASE}/chat/completions`, {
     method: "POST",
     headers: headers(),
     body: JSON.stringify({
-      model: GEN_MODEL,
+      model,
       messages: [{ role: "user", content: prompt }],
     }),
   });
@@ -57,4 +58,14 @@ export async function generate(prompt: string): Promise<string> {
   }
   const data = await res.json();
   return data.choices?.[0]?.message?.content ?? "";
+}
+
+/** QUALITY generation — user-facing output (e.g. Run an agent). Uses GEN_MODEL. */
+export async function generate(prompt: string): Promise<string> {
+  return complete(prompt, GEN_MODEL);
+}
+
+/** FAST generation — cheap utility tasks (auto-metadata, eval scoring, classify). */
+export async function generateFast(prompt: string): Promise<string> {
+  return complete(prompt, FAST_MODEL);
 }
