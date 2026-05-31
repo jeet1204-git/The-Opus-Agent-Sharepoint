@@ -87,7 +87,7 @@ export default function SearchExperience({ query }: { query: string }) {
         Results for &ldquo;{query}&rdquo;
       </h2>
       <p className="text-slate-500 mb-8 text-sm">
-        An assistant reads your intent and finds the agent to reuse — so you don&apos;t rebuild it.
+        An assistant reads your intent and finds the agent to reuse - so you don&apos;t rebuild it.
       </p>
 
       {/* Thinking animation */}
@@ -120,7 +120,7 @@ export default function SearchExperience({ query }: { query: string }) {
         <div className="mb-8 rounded-xl border border-amber-500/30 bg-amber-500/[0.06] px-5 py-4 flex items-start gap-3">
           <Search size={16} className="text-amber-400 mt-0.5 shrink-0" />
           <p className="text-sm text-amber-200/80">
-            We couldn&apos;t find a strong match for this. We&apos;ve noted the gap — try rephrasing, or{" "}
+            We couldn&apos;t find a strong match for this. We&apos;ve noted the gap - try rephrasing, or{" "}
             <Link href="/agent/new" className="underline underline-offset-2 text-amber-300 hover:text-amber-200">
               create this agent
             </Link>
@@ -187,7 +187,7 @@ export default function SearchExperience({ query }: { query: string }) {
 function AnswerCard({ ai, best }: { ai: NonNullable<AiSearchResult["ai"]>; best: SearchMatch | null }) {
   const badge =
     ai.verdict === "exists"
-      ? { text: "Already exists — reuse it", cls: "bg-emerald-500/20 text-emerald-300" }
+      ? { text: "Already exists - reuse it", cls: "bg-emerald-500/20 text-emerald-300" }
       : ai.verdict === "closest"
         ? { text: "Closest starting point", cls: "bg-amber-500/20 text-amber-300" }
         : { text: "No match yet", cls: "bg-slate-700/60 text-slate-700" };

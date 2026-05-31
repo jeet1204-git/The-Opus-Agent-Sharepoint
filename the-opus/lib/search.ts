@@ -60,7 +60,7 @@ export async function searchAssets(
  * Agentic search: embeddings shortlist the candidates (fast, scales), then a
  * cheap fast model (Gemini 3.5 Flash via generateFast) reasons over ONLY those
  * candidates and returns a confident, plain-English verdict. The model can
- * never invent an agent — we validate its pick against the shortlist and fall
+ * never invent an agent - we validate its pick against the shortlist and fall
  * back to pure semantic order if anything looks off.
  */
 export async function aiSearch(query: string): Promise<AiSearchResult> {
@@ -74,21 +74,21 @@ export async function aiSearch(query: string): Promise<AiSearchResult> {
       ai: {
         verdict: "none",
         bestId: null,
-        headline: `Nothing in the registry matches “${trimmed}” yet — you'd be the first to build it.`,
+        headline: `Nothing in the registry matches “${trimmed}” yet - you'd be the first to build it.`,
         reason: "",
       },
     };
   }
 
   const lines = results
-    .map((r) => `[${r.id}] ${r.title} — ${r.metadata?.purpose ?? r.description ?? r.type} (tags: ${(r.tags ?? []).join(", ")})`)
+    .map((r) => `[${r.id}] ${r.title} - ${r.metadata?.purpose ?? r.description ?? r.type} (tags: ${(r.tags ?? []).join(", ")})`)
     .join("\n");
 
   const prompt = `You are the search assistant for a company's internal AI-agent registry. A teammate is looking for an agent to REUSE instead of building their own.
 
 Their request: "${trimmed}"
 
-Candidate agents already in the registry (pre-filtered by meaning). You may ONLY pick from these — never invent one:
+Candidate agents already in the registry (pre-filtered by meaning). You may ONLY pick from these - never invent one:
 ${lines}
 
 Classify the result:

@@ -1,4 +1,4 @@
-// Agent "contract" validation — a named challenge requirement.
+// Agent "contract" validation - a named challenge requirement.
 // An asset is only reusable by another team if its contract is complete:
 // purpose, runnable content, tool needs, and explicit "when NOT to use".
 
@@ -31,7 +31,7 @@ export function validateContract(input: ContractInput): ContractIssue[] {
   const issues: ContractIssue[] = [];
   const m = input.metadata ?? {};
 
-  // — Errors (block) —
+  // - Errors (block) -
   if (!input.title.trim()) {
     issues.push({ field: "title", level: "error", message: "Title is required." });
   }
@@ -39,30 +39,30 @@ export function validateContract(input: ContractInput): ContractIssue[] {
     issues.push({ field: "type", level: "error", message: "Type must be agent, skill, or prompt." });
   }
   if (!input.content.trim() && !input.hasFile) {
-    issues.push({ field: "content", level: "error", message: "Provide runnable content (prompt/config) or upload a file — storage alone isn't reuse." });
+    issues.push({ field: "content", level: "error", message: "Provide runnable content (prompt/config) or upload a file - storage alone isn't reuse." });
   }
   if (!m.purpose?.trim()) {
     issues.push({ field: "purpose", level: "error", message: "Purpose is required so another team knows what this does." });
   }
 
-  // — Warnings (allow, but flag: completeness = trust) —
+  // - Warnings (allow, but flag: completeness = trust) -
   if (!m.when_not_to_use?.trim()) {
-    issues.push({ field: "when_not_to_use", level: "warning", message: "No 'when NOT to use' — reuse is risky without boundaries." });
+    issues.push({ field: "when_not_to_use", level: "warning", message: "No 'when NOT to use' - reuse is risky without boundaries." });
   }
   if (input.type === "agent" && (!m.tools || m.tools.length === 0)) {
-    issues.push({ field: "tools", level: "warning", message: "No tools listed — agents usually need to declare their tool dependencies." });
+    issues.push({ field: "tools", level: "warning", message: "No tools listed - agents usually need to declare their tool dependencies." });
   }
   if (!input.description.trim()) {
     issues.push({ field: "description", level: "warning", message: "A short description helps discovery." });
   }
 
-  // — Config sanity: if framework looks like JSON config, check it parses —
+  // - Config sanity: if framework looks like JSON config, check it parses -
   const fw = (m.framework ?? "").toLowerCase();
   if (input.content.trim() && (fw.includes("json") || input.content.trim().startsWith("{"))) {
     try {
       JSON.parse(input.content);
     } catch {
-      issues.push({ field: "content", level: "warning", message: "Content looks like JSON but doesn't parse — double-check the config." });
+      issues.push({ field: "content", level: "warning", message: "Content looks like JSON but doesn't parse - double-check the config." });
     }
   }
 

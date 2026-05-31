@@ -39,7 +39,7 @@ const DEMO: DemoAsset[] = [
       purpose: "Classify a support ticket (severity, component, customer sentiment) and recommend a routing queue.",
       requirements: "Raw ticket text. Optional customer tier.",
       tools: ["classifier", "knowledge_base_search"],
-      when_not_to_use: "Don't use for security incidents — those must go to the on-call security path directly.",
+      when_not_to_use: "Don't use for security incidents - those must go to the on-call security path directly.",
       framework: "CrewAI",
     },
     content:
@@ -157,7 +157,7 @@ export async function GET() {
   if ((count ?? 0) > 0) {
     return NextResponse.json({
       skipped: true,
-      message: `Org already has ${count} assets — seed skipped.`,
+      message: `Org already has ${count} assets - seed skipped.`,
     });
   }
 
@@ -180,7 +180,7 @@ export async function GET() {
       embedding = await embed(text);
       embeddedCount++;
     } catch {
-      embedding = null; // no OpenRouter key / quota — still seed, just no vector
+      embedding = null; // no OpenRouter key / quota - still seed, just no vector
     }
 
     const { data, error } = await supabase

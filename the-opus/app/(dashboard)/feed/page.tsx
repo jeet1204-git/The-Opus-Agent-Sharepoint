@@ -111,7 +111,7 @@ export default async function FeedPage({
             {visible.length === 0 ? (
               <div className="rounded-xl border border-dashed border-slate-300 p-10 text-center text-slate-500">
                 {openOnly
-                  ? 'No org-wide agents yet — switch to “All agents”.'
+                  ? 'No org-wide agents yet - switch to “All agents”.'
                   : <>No agents yet. <Link href="/upload" className="text-[#7c5cff]">Publish the first one →</Link></>}
               </div>
             ) : (

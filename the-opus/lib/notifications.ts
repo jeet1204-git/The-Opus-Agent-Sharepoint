@@ -42,7 +42,7 @@ export async function notifyAdminsSearchGap(gapSummary: string) {
 }
 
 /**
- * Generic helper — send a notification to a specific user.
+ * Generic helper - send a notification to a specific user.
  * Also a server action, so call it from other server actions directly.
  */
 export async function notifyUser({

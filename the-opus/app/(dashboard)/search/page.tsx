@@ -23,7 +23,7 @@ export default async function SearchPage({
             </h3>
             <h2 className="text-2xl font-bold mb-1 text-[#15161a]">Search</h2>
             <p className="text-slate-500 mb-8 text-sm">
-              Describe the task you need an agent for — the assistant finds what to reuse.
+              Describe the task you need an agent for - the assistant finds what to reuse.
             </p>
             <div className="rounded-xl border border-dashed border-slate-200 p-10 text-center text-slate-500">
               <Search size={20} className="mx-auto mb-2" />

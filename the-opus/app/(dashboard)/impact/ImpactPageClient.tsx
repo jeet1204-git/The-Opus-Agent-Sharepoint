@@ -167,7 +167,7 @@ export default function ImpactPageClient({
       // Type A grows as a compounding curve: each year the org adds more assets,
       // so savings compound at the same daily rate observed so far.
       // Cumulative Type A at year Y = annualCreationRate × Y × (Y+1)/2
-      //   (triangular sum — year 1 adds 1×, year 2 adds 2×, etc.)
+      //   (triangular sum - year 1 adds 1×, year 2 adds 2×, etc.)
       // This produces a curve that accelerates, not a flat line.
       const data = Array.from({ length: 10 }, (_, i) => {
         const y = i + 1;
@@ -175,8 +175,8 @@ export default function ImpactPageClient({
         const cumulativeB = Math.round(annExecNet * y);
         return {
           year: `Year ${y}`,
-          "Type A — Creation": cumulativeA,
-          "Type B — Execution": cumulativeB,
+          "Type A - Creation": cumulativeA,
+          "Type B - Execution": cumulativeB,
           Combined: cumulativeA + cumulativeB,
         };
       });
@@ -190,7 +190,7 @@ export default function ImpactPageClient({
     }, [hourlyRate, utilizationRate, trackingWindow, estimatedHoursSaved, earliestCreatedAt, latestUpdatedAt]);
 
   const total10yr =
-    chartData[9]["Type A — Creation"] + chartData[9]["Type B — Execution"];
+    chartData[9]["Type A - Creation"] + chartData[9]["Type B - Execution"];
 
   return (
     <div className="flex-1 overflow-y-auto bg-[#fbfbfa] flex flex-col lg:flex-row">
@@ -240,9 +240,9 @@ export default function ImpactPageClient({
                 Each asset is scored by AI on three dimensions (0–1 each):
               </p>
               <ul className="text-slate-500 space-y-0.5">
-                <li><span className="text-slate-700">length</span> — how detailed the content is</li>
-                <li><span className="text-slate-700">complexity</span> — branching logic, multi-step reasoning</li>
-                <li><span className="text-slate-700">specificity</span> — domain-specific vs generic</li>
+                <li><span className="text-slate-700">length</span> - how detailed the content is</li>
+                <li><span className="text-slate-700">complexity</span> - branching logic, multi-step reasoning</li>
+                <li><span className="text-slate-700">specificity</span> - domain-specific vs generic</li>
               </ul>
               <code className="block bg-white rounded px-2 py-1 mt-2 text-[#7c5cff]">
                 hours = (length + complexity + specificity) × 0.5
@@ -287,7 +287,7 @@ export default function ImpactPageClient({
                 TypeA(Y) = annualRate × Y×(Y+1)/2
               </code>
               <p className="text-slate-500 mb-2">
-                Type A accelerates — each year the org adds more assets at the same daily rate
+                Type A accelerates - each year the org adds more assets at the same daily rate
                 observed so far (<span className="text-slate-700">{Math.round(daysSinceInception)} days</span> of data).
                 The triangular sum <code className="text-amber-600">Y×(Y+1)/2</code> produces a curve, not a flat line.
               </p>
@@ -339,7 +339,7 @@ export default function ImpactPageClient({
               />
               <Area
                 type="monotone"
-                dataKey="Type B — Execution"
+                dataKey="Type B - Execution"
                 stroke="#10b981"
                 strokeWidth={2}
                 fill="url(#gradB)"
@@ -348,7 +348,7 @@ export default function ImpactPageClient({
               />
               <Area
                 type="monotone"
-                dataKey="Type A — Creation"
+                dataKey="Type A - Creation"
                 stroke="#3b82f6"
                 strokeWidth={1.5}
                 strokeDasharray="5 3"

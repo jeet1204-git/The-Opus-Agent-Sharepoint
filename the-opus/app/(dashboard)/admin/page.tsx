@@ -56,7 +56,7 @@ export default async function AdminPage({
             <h2 className="text-xl font-bold text-[#15161a] mb-1">Invite an employee</h2>
             <p className="text-sm text-slate-500 mb-4">
               Authorize a work email for <span className="text-slate-700">{orgTyped?.name}</span>.
-              Only emails on this list can sign up — the employee sets their own password from
+              Only emails on this list can sign up - the employee sets their own password from
               the activation link.
             </p>
 
@@ -83,7 +83,7 @@ export default async function AdminPage({
               <div>
                 <label className={labelCls}>Department</label>
                 <select name="department" defaultValue="" className={inputCls}>
-                  <option value="">— none —</option>
+                  <option value="">- none -</option>
                   {DEPARTMENTS.map((d) => (
                     <option key={d} value={d}>{d}</option>
                   ))}
@@ -134,9 +134,9 @@ export default async function AdminPage({
                 <tbody className="divide-y divide-slate-100">
                   {list.map((r) => (
                     <tr key={r.id} className="bg-white">
-                      <td className="px-4 py-3 text-[#15161a]">{r.full_name ?? "—"}</td>
+                      <td className="px-4 py-3 text-[#15161a]">{r.full_name ?? "-"}</td>
                       <td className="px-4 py-3 text-slate-500">{r.email}</td>
-                      <td className="px-4 py-3 text-slate-500">{r.department ?? "—"}</td>
+                      <td className="px-4 py-3 text-slate-500">{r.department ?? "-"}</td>
                       <td className="px-4 py-3">
                         <span className={`rounded px-2 py-0.5 text-xs font-bold ${r.role === "admin" ? "bg-[#7c5cff]/20 text-[#7c5cff]" : "bg-slate-100 text-slate-500"}`}>
                           {r.role}
@@ -165,7 +165,7 @@ export default async function AdminPage({
                             </form>
                           </div>
                         ) : (
-                          <div className="text-right text-xs text-slate-600">—</div>
+                          <div className="text-right text-xs text-slate-600">-</div>
                         )}
                       </td>
                     </tr>

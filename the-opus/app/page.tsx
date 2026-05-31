@@ -1,9 +1,24 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
 
 export default function LandingPage() {
+  const router = useRouter();
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    createClient().auth.getUser().then(({ data }) => setIsLoggedIn(!!data.user));
+  }, []);
+
+  async function handleSignOut() {
+    await createClient().auth.signOut();
+    setIsLoggedIn(false);
+    router.refresh();
+  }
+
   useEffect(() => {
     const cv = document.getElementById("opus-field") as HTMLCanvasElement | null;
     const dot = document.getElementById("opus-dot");
@@ -67,17 +82,24 @@ export default function LandingPage() {
         <nav className="nav">
           <div className="wm"><span className="logo" />Opus</div>
           <div className="navlinks">
-            <Link href="/feed" className="hov">Discover</Link>
-            <Link href="/upload" className="hov">Publish</Link>
-            <Link href="/impact" className="hov">Impact</Link>
-            <Link href="/feed" className="cta hov">Launch ↗</Link>
+            {isLoggedIn ? (
+              <>
+                <Link href="/feed" className="hov">Launch workspace</Link>
+                <button type="button" onClick={handleSignOut} className="cta hov" style={{ border: "none", cursor: "none", fontFamily: "inherit", fontSize: "inherit" }}>Sign out</button>
+              </>
+            ) : (
+              <>
+                <Link href="/login" className="hov">Log in</Link>
+                <Link href="/signup" className="cta hov">Sign up ↗</Link>
+              </>
+            )}
           </div>
         </nav>
 
         <div className="hero">
           <div className="pill"><span className="d" />Your company&apos;s AI agents, in one place</div>
           <h1>Build it once.<br /><span className="g">Reuse it forever.</span></h1>
-          <p className="sub">The lively home for every AI agent your team builds — discover what already exists, trust it, and run it in one click.</p>
+          <p className="sub">The lively home for every AI agent your team builds - discover what already exists, trust it, and run it in one click.</p>
           <div className="btns">
             <Link href="/feed" className="p hov">Launch workspace ↗</Link>
             <Link href="/search" className="s hov">Explore agents</Link>

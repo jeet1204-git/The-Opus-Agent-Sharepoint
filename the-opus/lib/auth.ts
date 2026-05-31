@@ -19,14 +19,14 @@ export async function getProfile(): Promise<Profile | null> {
   return (data as Profile) ?? null;
 }
 
-/** Use in protected pages — redirects to /login if not signed in. */
+/** Use in protected pages - redirects to /login if not signed in. */
 export async function requireProfile(): Promise<Profile> {
   const profile = await getProfile();
   if (!profile) redirect("/login");
   return profile;
 }
 
-/** Use in admin-only pages — redirects non-admins to /feed. */
+/** Use in admin-only pages - redirects non-admins to /feed. */
 export async function requireAdmin(): Promise<Profile> {
   const profile = await requireProfile();
   if (profile.role !== "admin") redirect("/feed");

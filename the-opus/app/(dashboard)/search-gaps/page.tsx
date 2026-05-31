@@ -120,7 +120,7 @@ export default async function SearchGapsPage({
             Search gaps
           </h2>
           <p className="text-sm text-slate-500">
-            Queries where users found no strong match — candidates for new agents.
+            Queries where users found no strong match - candidates for new agents.
           </p>
         </div>
 
