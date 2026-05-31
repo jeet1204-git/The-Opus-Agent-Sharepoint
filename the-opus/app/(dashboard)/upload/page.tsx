@@ -5,6 +5,7 @@ import Link from "next/link";
 import { UploadCloud, AlertTriangle, XCircle, Copy, Loader2 } from "lucide-react";
 import { createAsset, type UploadState } from "./actions";
 import { searchAssets } from "@/lib/search";
+import { DEPARTMENTS } from "@/lib/departments";
 import type { ContractIssue } from "@/lib/validation";
 import type { SearchMatch } from "@/lib/types";
 
@@ -39,6 +40,9 @@ const labelCls =
 
 export default function UploadPage() {
   const [state, formAction, pending] = useActionState(createAsset, initial);
+
+  // ── Department scope (Part B: content-gating) ──
+  const [dept, setDept] = useState("");
 
   // ── Live "about-to-duplicate" detector ──
   const [dupes, setDupes] = useState<SearchMatch[]>([]);
@@ -207,6 +211,37 @@ export default function UploadPage() {
               <label className={labelCls}>Tags (comma-separated)</label>
               <input name="tags" className={inputCls} placeholder="legal, summarization, llm" />
             </div>
+
+            {/* Department scope */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 border-t border-slate-800 pt-4">
+              <div>
+                <label className={labelCls}>Department</label>
+                <select
+                  name="department"
+                  value={dept}
+                  onChange={(e) => setDept(e.target.value)}
+                  className={inputCls}
+                >
+                  <option value="">— Everyone (no department) —</option>
+                  {DEPARTMENTS.map((d) => (
+                    <option key={d} value={d}>{d}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="flex items-end">
+                <label
+                  className={`flex items-center gap-2 text-sm ${dept ? "text-slate-300" : "text-slate-600"}`}
+                >
+                  <input type="checkbox" name="restricted" disabled={!dept} className="h-4 w-4 rounded border-slate-600 bg-slate-900 accent-blue-600" />
+                  Restrict payload to {dept || "this department"} only
+                </label>
+              </div>
+            </div>
+            <p className="text-xs text-slate-500">
+              Restricted agents stay <span className="text-slate-400">discoverable by everyone</span> (title,
+              description, trust signals) — but only {dept || "the chosen department"} (and admins) can see the
+              prompt/file and run it.
+            </p>
           </div>
 
           {/* Runnable content */}

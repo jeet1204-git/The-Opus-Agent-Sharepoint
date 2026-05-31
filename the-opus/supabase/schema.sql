@@ -24,8 +24,29 @@ create table if not exists public.profiles (
   full_name   text,
   email       text,
   role        text not null default 'member' check (role in ('admin','member')),
+  department  text,
   created_at  timestamptz not null default now()
 );
+
+-- Allowlist of authorized employee emails (admin-managed). An email must exist
+-- here before that person can sign up; they then verify + set their own password.
+create table if not exists public.org_allowlist (
+  id                uuid primary key default gen_random_uuid(),
+  org_id            uuid not null references public.organizations(id) on delete cascade,
+  email             text not null,
+  full_name         text,
+  department        text,
+  role              text not null default 'member' check (role in ('admin','member')),
+  status            text not null default 'invited' check (status in ('invited','active')),
+  activation_token  text,
+  token_expires_at  timestamptz,
+  invited_by        uuid references public.profiles(id) on delete set null,
+  created_at        timestamptz not null default now()
+);
+create unique index if not exists org_allowlist_email_uniq
+  on public.org_allowlist (org_id, lower(email));
+create index if not exists org_allowlist_token_idx
+  on public.org_allowlist (activation_token);
 
 -- Assets = the shared things: agents | skills | prompts
 create table if not exists public.assets (
@@ -40,6 +61,8 @@ create table if not exists public.assets (
   content         text,                 -- the actual prompt / config text
   file_url        text,                 -- optional uploaded file (storage)
   tags            text[] not null default '{}',
+  department      text,                 -- optional: scope this agent to a department
+  restricted      boolean not null default false, -- if true, payload limited to department + admins
   embedding       vector(768),          -- OpenRouter text-embedding-3-small
   created_at      timestamptz not null default now(),
   updated_at      timestamptz not null default now()
@@ -105,13 +128,14 @@ $$;
 create or replace function public.handle_new_user()
 returns trigger language plpgsql security definer set search_path = public as $$
 begin
-  insert into public.profiles (id, org_id, full_name, email, role)
+  insert into public.profiles (id, org_id, full_name, email, role, department)
   values (
     new.id,
     nullif(new.raw_user_meta_data->>'org_id','')::uuid,
     new.raw_user_meta_data->>'full_name',
     new.email,
-    coalesce(new.raw_user_meta_data->>'role','member')
+    coalesce(new.raw_user_meta_data->>'role','member'),
+    new.raw_user_meta_data->>'department'
   )
   on conflict (id) do nothing;
   return new;
@@ -219,6 +243,21 @@ create policy usages_select on public.usages
 drop policy if exists usages_write on public.usages;
 create policy usages_write on public.usages
   for insert with check (user_id = auth.uid());
+
+-- Allowlist: admins of the org manage their own org's entries. Public signup
+-- checks run via a service-role server action (bypasses RLS), so this is locked.
+alter table public.org_allowlist enable row level security;
+drop policy if exists allowlist_admin_all on public.org_allowlist;
+create policy allowlist_admin_all on public.org_allowlist
+  for all
+  using (
+    org_id = public.current_org_id()
+    and exists (select 1 from public.profiles p where p.id = auth.uid() and p.role = 'admin')
+  )
+  with check (
+    org_id = public.current_org_id()
+    and exists (select 1 from public.profiles p where p.id = auth.uid() and p.role = 'admin')
+  );
 
 -- 7. STORAGE BUCKET (for uploaded agent files) --------------------------------
 insert into storage.buckets (id, name, public)

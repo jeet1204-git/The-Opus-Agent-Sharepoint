@@ -3,6 +3,7 @@
 import { requireProfile } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { generate } from "@/lib/ai";
+import { canUsePayload } from "@/lib/access";
 
 export interface RunResult {
   output: string;
@@ -19,11 +20,15 @@ export async function runAgent(assetId: string, userInput: string): Promise<RunR
 
   const { data: asset, error } = await supabase
     .from("assets")
-    .select("title, content")
+    .select("title, content, department, restricted")
     .eq("id", assetId)
     .single();
 
   if (error || !asset) return { output: "", error: "Agent not found." };
+  // Enforce department gating server-side (the UI hides Run, but never trust the client).
+  if (!canUsePayload(asset, profile)) {
+    return { output: "", error: `Restricted: only the ${asset.department} department can run this agent.` };
+  }
   if (!asset.content) return { output: "", error: "This agent has no runnable content." };
 
   const prompt = [

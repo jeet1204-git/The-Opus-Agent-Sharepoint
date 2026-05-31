@@ -1,8 +1,16 @@
 import { requireAdmin } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
-import { createOrgUser } from "./actions";
-import type { Profile, Organization } from "@/lib/types";
-import { Shield } from "lucide-react";
+import { inviteEmployee, regenerateInvite, removeInvite } from "./actions";
+import CopyInviteLink from "./CopyInviteLink";
+import { DEPARTMENTS } from "@/lib/departments";
+import type { AllowlistEntry, Organization } from "@/lib/types";
+import { Shield, Download, UserPlus, RefreshCw, Trash2 } from "lucide-react";
+
+const OK_MESSAGES: Record<string, string> = {
+  invited: "Employee invited. Copy their activation link below.",
+  reissued: "A fresh activation link was generated.",
+  removed: "Employee removed from the allowlist.",
+};
 
 export default async function AdminPage({
   searchParams,
@@ -13,19 +21,25 @@ export default async function AdminPage({
   const { error, ok } = await searchParams;
 
   const supabase = await createClient();
-  const { data: members } = await supabase
-    .from("profiles")
-    .select("*")
-    .eq("org_id", profile.org_id)
-    .order("created_at");
   const { data: org } = await supabase
     .from("organizations")
     .select("*")
     .eq("id", profile.org_id)
     .single();
+  const { data: roster } = await supabase
+    .from("org_allowlist")
+    .select("*")
+    .eq("org_id", profile.org_id)
+    .order("created_at");
 
   const orgTyped = org as Organization | null;
-  const memberList = (members as Profile[]) ?? [];
+  const list = (roster as AllowlistEntry[]) ?? [];
+  const activeCount = list.filter((r) => r.status === "active").length;
+  const invitedCount = list.filter((r) => r.status === "invited").length;
+
+  const inputCls =
+    "w-full rounded-md border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500";
+  const labelCls = "mb-1 block text-xs font-medium uppercase tracking-wider text-slate-400";
 
   return (
     <>
@@ -37,11 +51,13 @@ export default async function AdminPage({
 
       <div className="flex-1 overflow-y-auto p-8 bg-[#0b1120]">
         <div className="space-y-10">
-          {/* Create user */}
+          {/* Invite employee */}
           <section>
-            <h2 className="text-xl font-bold text-white mb-1">Create a user</h2>
+            <h2 className="text-xl font-bold text-white mb-1">Invite an employee</h2>
             <p className="text-sm text-slate-500 mb-4">
-              New users are added to <span className="text-slate-300">{orgTyped?.name}</span> and can sign in immediately.
+              Authorize a work email for <span className="text-slate-300">{orgTyped?.name}</span>.
+              Only emails on this list can sign up — the employee sets their own password from
+              the activation link.
             </p>
 
             {error && (
@@ -49,66 +65,113 @@ export default async function AdminPage({
                 {error}
               </div>
             )}
-            {ok && (
+            {ok && OK_MESSAGES[ok] && (
               <div className="mb-4 rounded-md border border-green-500/30 bg-green-500/10 px-3 py-2 text-sm text-green-400">
-                User created.
+                {OK_MESSAGES[ok]}
               </div>
             )}
 
-            <form action={createOrgUser} className="grid grid-cols-1 md:grid-cols-2 gap-4 rounded-xl border border-slate-800 bg-slate-900/40 p-6">
+            <form action={inviteEmployee} className="grid grid-cols-1 md:grid-cols-2 gap-4 rounded-xl border border-slate-800 bg-slate-900/40 p-6">
               <div>
-                <label className="mb-1 block text-xs font-medium uppercase tracking-wider text-slate-400">Full name</label>
-                <input name="full_name" className="w-full rounded-md border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Jane Doe" />
+                <label className={labelCls}>Full name</label>
+                <input name="full_name" className={inputCls} placeholder="Jane Doe" />
               </div>
               <div>
-                <label className="mb-1 block text-xs font-medium uppercase tracking-wider text-slate-400">Role</label>
-                <select name="role" className="w-full rounded-md border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <label className={labelCls}>Work email *</label>
+                <input name="email" type="email" required className={inputCls} placeholder="jane@company.com" />
+              </div>
+              <div>
+                <label className={labelCls}>Department</label>
+                <select name="department" defaultValue="" className={inputCls}>
+                  <option value="">— none —</option>
+                  {DEPARTMENTS.map((d) => (
+                    <option key={d} value={d}>{d}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className={labelCls}>Role</label>
+                <select name="role" defaultValue="member" className={inputCls}>
                   <option value="member">Member</option>
                   <option value="admin">Admin</option>
                 </select>
               </div>
-              <div>
-                <label className="mb-1 block text-xs font-medium uppercase tracking-wider text-slate-400">Email</label>
-                <input name="email" type="email" required className="w-full rounded-md border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="jane@company.com" />
-              </div>
-              <div>
-                <label className="mb-1 block text-xs font-medium uppercase tracking-wider text-slate-400">Temp password</label>
-                <input name="password" type="text" required className="w-full rounded-md border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="set-a-password" />
-              </div>
               <div className="md:col-span-2">
-                <button type="submit" className="rounded-md bg-blue-600 px-5 py-2 font-bold text-white transition-colors hover:bg-blue-500">
-                  Create user
+                <button type="submit" className="inline-flex items-center gap-2 rounded-md bg-blue-600 px-5 py-2 font-bold text-white transition-colors hover:bg-blue-500">
+                  <UserPlus size={16} /> Invite employee
                 </button>
               </div>
             </form>
           </section>
 
-          {/* Members */}
+          {/* Roster */}
           <section>
-            <h2 className="text-xl font-bold text-white mb-4">Members ({memberList.length})</h2>
+            <div className="mb-4 flex items-center justify-between">
+              <div>
+                <h2 className="text-xl font-bold text-white">Roster ({list.length})</h2>
+                <p className="text-sm text-slate-500">{activeCount} active · {invitedCount} pending</p>
+              </div>
+              <a
+                href="/admin/export"
+                className="inline-flex items-center gap-2 rounded-md border border-slate-700 px-4 py-2 text-sm font-medium text-slate-200 transition-colors hover:border-blue-500/50 hover:text-white"
+              >
+                <Download size={16} /> Export CSV
+              </a>
+            </div>
+
             <div className="overflow-hidden rounded-xl border border-slate-800">
               <table className="w-full text-sm">
                 <thead className="bg-slate-900 text-slate-400">
                   <tr>
                     <th className="px-4 py-3 text-left font-medium">Name</th>
                     <th className="px-4 py-3 text-left font-medium">Email</th>
+                    <th className="px-4 py-3 text-left font-medium">Department</th>
                     <th className="px-4 py-3 text-left font-medium">Role</th>
+                    <th className="px-4 py-3 text-left font-medium">Status</th>
+                    <th className="px-4 py-3 text-right font-medium">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-800">
-                  {memberList.map((m) => (
-                    <tr key={m.id} className="bg-slate-900/30">
-                      <td className="px-4 py-3 text-white">{m.full_name ?? "—"}</td>
-                      <td className="px-4 py-3 text-slate-400">{m.email ?? "—"}</td>
+                  {list.map((r) => (
+                    <tr key={r.id} className="bg-slate-900/30">
+                      <td className="px-4 py-3 text-white">{r.full_name ?? "—"}</td>
+                      <td className="px-4 py-3 text-slate-400">{r.email}</td>
+                      <td className="px-4 py-3 text-slate-400">{r.department ?? "—"}</td>
                       <td className="px-4 py-3">
-                        <span className={`rounded px-2 py-0.5 text-xs font-bold ${m.role === "admin" ? "bg-blue-600/20 text-blue-400" : "bg-slate-800 text-slate-400"}`}>
-                          {m.role}
+                        <span className={`rounded px-2 py-0.5 text-xs font-bold ${r.role === "admin" ? "bg-blue-600/20 text-blue-400" : "bg-slate-800 text-slate-400"}`}>
+                          {r.role}
                         </span>
+                      </td>
+                      <td className="px-4 py-3">
+                        <span className={`rounded px-2 py-0.5 text-xs font-bold ${r.status === "active" ? "bg-emerald-500/15 text-emerald-300" : "bg-amber-500/15 text-amber-300"}`}>
+                          {r.status}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3">
+                        {r.status === "invited" ? (
+                          <div className="flex items-center justify-end gap-2">
+                            {r.activation_token && <CopyInviteLink token={r.activation_token} />}
+                            <form action={regenerateInvite}>
+                              <input type="hidden" name="id" value={r.id} />
+                              <button title="Re-issue link" className="rounded border border-slate-700 p-1.5 text-slate-400 transition-colors hover:border-blue-500/50 hover:text-white">
+                                <RefreshCw size={12} />
+                              </button>
+                            </form>
+                            <form action={removeInvite}>
+                              <input type="hidden" name="id" value={r.id} />
+                              <button title="Remove" className="rounded border border-slate-700 p-1.5 text-slate-400 transition-colors hover:border-red-500/50 hover:text-red-400">
+                                <Trash2 size={12} />
+                              </button>
+                            </form>
+                          </div>
+                        ) : (
+                          <div className="text-right text-xs text-slate-600">—</div>
+                        )}
                       </td>
                     </tr>
                   ))}
-                  {memberList.length === 0 && (
-                    <tr><td colSpan={3} className="px-4 py-6 text-center text-slate-500">No members yet.</td></tr>
+                  {list.length === 0 && (
+                    <tr><td colSpan={6} className="px-4 py-6 text-center text-slate-500">No one on the roster yet. Invite your first employee above.</td></tr>
                   )}
                 </tbody>
               </table>

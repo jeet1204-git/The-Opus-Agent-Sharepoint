@@ -25,6 +25,23 @@ export interface Profile {
   email: string | null;
   role: UserRole;
   avatar_url?: string | null;
+  department: string | null;
+  created_at: string;
+}
+
+export type AllowlistStatus = "invited" | "active";
+
+export interface AllowlistEntry {
+  id: string;
+  org_id: string;
+  email: string;
+  full_name: string | null;
+  department: string | null;
+  role: UserRole;
+  status: AllowlistStatus;
+  activation_token: string | null;
+  token_expires_at: string | null;
+  invited_by: string | null;
   created_at: string;
 }
 
@@ -39,6 +56,8 @@ export interface Asset {
   content: string | null;
   file_url: string | null;
   tags: string[];
+  department: string | null;
+  restricted: boolean;
   created_at: string;
   updated_at: string;
 }

@@ -4,9 +4,9 @@ import Image from "next/image";
 export default async function LoginPage({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string }>;
+  searchParams: Promise<{ error?: string; ok?: string }>;
 }) {
-  const { error } = await searchParams;
+  const { error, ok } = await searchParams;
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-[#0b1120] text-slate-200 font-sans">
@@ -25,6 +25,11 @@ export default async function LoginPage({
         <h2 className="mb-1 text-xl font-semibold text-white">Sign in</h2>
         <p className="mb-6 text-sm text-slate-500">Use the account your admin created.</p>
 
+        {ok === "activated" && (
+          <div className="mb-4 rounded-md border border-green-500/30 bg-green-500/10 px-3 py-2 text-sm text-green-400">
+            Account activated — please sign in.
+          </div>
+        )}
         {error && (
           <div className="mb-4 rounded-md border border-red-500/30 bg-red-500/10 px-3 py-2 text-sm text-red-400">
             {error}
@@ -65,6 +70,11 @@ export default async function LoginPage({
             Sign in
           </button>
         </form>
+
+        <p className="mt-6 text-center text-sm text-slate-500">
+          New here?{" "}
+          <a href="/signup" className="font-medium text-blue-400 hover:text-blue-300">Create your account</a>
+        </p>
       </div>
     </div>
   );
