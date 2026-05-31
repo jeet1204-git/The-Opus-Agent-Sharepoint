@@ -36,7 +36,7 @@ export default async function AdminPage({
       </header>
 
       <div className="flex-1 overflow-y-auto p-8 bg-[#0b1120]">
-        <div className="max-w-4xl space-y-10">
+        <div className="space-y-10">
           {/* Create user */}
           <section>
             <h2 className="text-xl font-bold text-white mb-1">Create a user</h2>

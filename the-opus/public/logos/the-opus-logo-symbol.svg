@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="100%" height="100%">
+  <defs>
+    <!-- Master Core Radial Glow -->
+    <radialGradient id="symbolCoreGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#38bdf8" stop-opacity="1" />
+      <stop offset="45%" stop-color="#2563eb" stop-opacity="0.8" />
+      <stop offset="70%" stop-color="#1d4ed8" stop-opacity="0.3" />
+      <stop offset="100%" stop-color="#0f172a" stop-opacity="0" />
+    </radialGradient>
+
+    <!-- Sleek Ring Linear Shading -->
+    <linearGradient id="symbolRingGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#60a5fa" />
+      <stop offset="50%" stop-color="#2563eb" />
+      <stop offset="100%" stop-color="#1e40af" />
+    </linearGradient>
+  </defs>
+
+  <!-- Ambient Glow Layer -->
+  <circle cx="100" cy="100" r="60" fill="url(#symbolCoreGlow)" opacity="0.6" filter="url(#symbolAmbientBlur)" />
+
+  <!-- THE ICON GRAPHIC -->
+  <g>
+    <!-- Outer Kinetic Orbital Ring -->
+    <circle cx="100" cy="100" r="75" fill="none" stroke="url(#symbolRingGrad)" stroke-width="2.5" stroke-dasharray="320 80" transform="rotate(-45 100 100)" opacity="0.4" />
+    
+    <!-- Sharp Primary Structural Ring -->
+    <circle cx="100" cy="100" r="60" fill="none" stroke="url(#symbolRingGrad)" stroke-width="8" stroke-linecap="round" stroke-dasharray="260 100" transform="rotate(25 100 100)" />
+
+    <!-- Pure Luminous Center Core (The Masterpiece Node) -->
+    <circle cx="100" cy="100" r="18" fill="url(#symbolCoreGlow)" />
+    <circle cx="100" cy="100" r="8" fill="#ffffff" style="mix-blend-mode: overlay;" />
+    
+    <!-- Precision Floating Node Accents -->
+    <circle cx="160" cy="100" r="4" fill="#38bdf8" />
+  </g>
+</svg>

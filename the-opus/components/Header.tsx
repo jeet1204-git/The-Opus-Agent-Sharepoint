@@ -2,7 +2,7 @@
 
 import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { Search, Bell, User, Settings } from 'lucide-react';
+import { Search, Bell, User } from 'lucide-react';
 import { SignOutButton } from './SignOutButton';
 
 export default function Header({ userName = 'User' }: { userName?: string }) {
@@ -67,13 +67,9 @@ export default function Header({ userName = 'User' }: { userName?: string }) {
                                         <p className="text-sm font-semibold truncate text-white">{userName}</p>
                                     </div>
                                     <div className="py-1">
-                                        <button className="w-full flex items-center gap-2 px-3 py-2 text-sm rounded-md hover:bg-slate-800 text-left transition-colors">
+                                        <button className="w-full flex items-center gap-2 px-3 py-2 text-sm rounded-md hover:bg-slate-800 text-left transition-colors" onClick={() => router.push('/profile')}>
                                             <User size={16} className="text-slate-400" />
                                             Profile
-                                        </button>
-                                        <button className="w-full flex items-center gap-2 px-3 py-2 text-sm rounded-md hover:bg-slate-800 text-left transition-colors">
-                                            <Settings size={16} className="text-slate-400" />
-                                            Settings
                                         </button>
                                     </div>
                                     <div className="border-t border-slate-800 pt-1 mt-1">

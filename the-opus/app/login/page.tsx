@@ -1,4 +1,5 @@
 import { login } from "./actions";
+import Image from "next/image";
 
 export default async function LoginPage({
   searchParams,
@@ -12,8 +13,8 @@ export default async function LoginPage({
       <div className="w-full max-w-sm rounded-2xl border border-slate-800 bg-[#0f172a] p-8 shadow-2xl">
         {/* Brand */}
         <div className="mb-8 flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-600 shadow-lg shadow-blue-900/30">
-            <span className="text-lg font-bold text-white">O</span>
+          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white shadow-lg shadow-blue-900/30">
+            <Image src="/logos/the-opus-logo-symbol.svg" alt="The OPUS Logo" className="w-16 h-16" width={64} height={64} />
           </div>
           <div>
             <h1 className="text-lg font-bold tracking-tight text-white">The OPUS</h1>
