@@ -11,8 +11,8 @@ const STEPS = ["Reading your request…", "Searching the registry…", "Asking t
 
 function relLabel(s: number): { text: string; cls: string } {
   if (s >= 0.3) return { text: "Strong match", cls: "bg-emerald-500/15 text-emerald-300" };
-  if (s >= 0.22) return { text: "Related", cls: "bg-blue-500/15 text-blue-300" };
-  return { text: "Loosely related", cls: "bg-slate-700/60 text-slate-400" };
+  if (s >= 0.22) return { text: "Related", cls: "bg-blue-500/15 text-[#7c5cff]" };
+  return { text: "Loosely related", cls: "bg-slate-700/60 text-slate-500" };
 }
 
 function isLowConfidenceResult(results: SearchMatch[], verdict: string | undefined): boolean {
@@ -81,9 +81,9 @@ export default function SearchExperience({ query }: { query: string }) {
   return (
     <div className="max-w-5xl">
       <h3 className="flex items-center gap-2 text-xs font-bold mb-2 uppercase tracking-[0.2em] text-slate-500">
-        <Sparkles size={14} className="text-blue-400" /> AI Search
+        <Sparkles size={14} className="text-[#7c5cff]" /> AI Search
       </h3>
-      <h2 className="text-2xl font-bold mb-1 text-white">
+      <h2 className="text-2xl font-bold mb-1 text-[#15161a]">
         Results for &ldquo;{query}&rdquo;
       </h2>
       <p className="text-slate-500 mb-8 text-sm">
@@ -93,7 +93,7 @@ export default function SearchExperience({ query }: { query: string }) {
       {/* Thinking animation */}
       {loading && (
         <div className="rounded-xl border border-blue-500/30 bg-blue-500/[0.06] p-6 mb-8">
-          <div className="flex items-center gap-3 text-blue-300">
+          <div className="flex items-center gap-3 text-[#7c5cff]">
             <Loader2 size={18} className="animate-spin" />
             <span className="font-medium">{STEPS[step]}</span>
           </div>
@@ -144,24 +144,24 @@ export default function SearchExperience({ query }: { query: string }) {
                   <Link
                     key={r.id}
                     href={`/agent/${r.id}`}
-                    className="p-6 rounded-xl border border-slate-800 bg-slate-900/50 transition-all hover:border-blue-500/50 group flex flex-col"
+                    className="p-6 rounded-xl border border-slate-200 bg-white transition-all hover:border-[#7c5cff]/40 group flex flex-col"
                   >
                     <div className="flex justify-between items-start mb-3 gap-2">
-                      <h4 className="font-bold leading-tight text-white group-hover:text-blue-400 transition-colors">
+                      <h4 className="font-bold leading-tight text-[#15161a] group-hover:text-[#7c5cff] transition-colors">
                         {r.title}
                       </h4>
                       <span className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold ${label.cls}`}>
                         {label.text}
                       </span>
                     </div>
-                    <p className="text-sm text-slate-400 mb-4 line-clamp-2 italic">
+                    <p className="text-sm text-slate-500 mb-4 line-clamp-2 italic">
                       &quot;{r.description || r.metadata?.purpose || r.type}&quot;
                     </p>
                     <div className="flex flex-wrap gap-2 mt-auto">
                       {(r.tags ?? []).slice(0, 3).map((t) => (
                         <span
                           key={t}
-                          className="px-2 py-0.5 bg-slate-800 text-[10px] font-bold rounded text-slate-300 border border-slate-700 uppercase"
+                          className="px-2 py-0.5 bg-slate-100 text-[10px] font-bold rounded text-slate-700 border border-slate-200 uppercase"
                         >
                           {t}
                         </span>
@@ -175,7 +175,7 @@ export default function SearchExperience({ query }: { query: string }) {
       )}
 
       {!loading && results.length === 0 && (
-        <div className="rounded-xl border border-dashed border-slate-700 p-10 text-center text-slate-500">
+        <div className="rounded-xl border border-dashed border-slate-200 p-10 text-center text-slate-500">
           <Search size={20} className="mx-auto mb-2" />
           No similar agents found. Try describing the task differently.
         </div>
@@ -190,29 +190,29 @@ function AnswerCard({ ai, best }: { ai: NonNullable<AiSearchResult["ai"]>; best:
       ? { text: "Already exists — reuse it", cls: "bg-emerald-500/20 text-emerald-300" }
       : ai.verdict === "closest"
         ? { text: "Closest starting point", cls: "bg-amber-500/20 text-amber-300" }
-        : { text: "No match yet", cls: "bg-slate-700/60 text-slate-300" };
+        : { text: "No match yet", cls: "bg-slate-700/60 text-slate-700" };
 
   return (
     <div className="mb-8 rounded-xl border border-blue-500/40 bg-gradient-to-br from-blue-500/[0.12] to-slate-900/40 p-6">
       <div className="mb-3 flex items-center gap-2">
-        <span className="flex items-center gap-1.5 text-blue-300">
+        <span className="flex items-center gap-1.5 text-[#7c5cff]">
           <Wand2 size={16} /> <span className="text-xs font-bold uppercase tracking-wider">Assistant</span>
         </span>
         <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${badge.cls}`}>{badge.text}</span>
       </div>
 
-      <p className="text-xl font-bold text-white leading-snug">{ai.headline}</p>
-      {ai.reason && <p className="mt-2 text-sm text-slate-300/90">{ai.reason}</p>}
+      <p className="text-xl font-bold text-[#15161a] leading-snug">{ai.headline}</p>
+      {ai.reason && <p className="mt-2 text-sm text-slate-700/90">{ai.reason}</p>}
 
       {best && ai.bestId && (
-        <div className="mt-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 rounded-lg border border-slate-700 bg-slate-900/60 p-4">
+        <div className="mt-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 rounded-lg border border-slate-200 bg-white/60 p-4">
           <div className="min-w-0">
             <div className="flex items-center gap-2">
               <CheckCircle2 size={16} className="text-emerald-400 shrink-0" />
-              <p className="font-semibold text-white truncate">{best.title}</p>
+              <p className="font-semibold text-[#15161a] truncate">{best.title}</p>
             </div>
             {ai.best && (
-              <div className="mt-1.5 flex flex-wrap items-center gap-3 text-xs text-slate-400">
+              <div className="mt-1.5 flex flex-wrap items-center gap-3 text-xs text-slate-500">
                 <span className="flex items-center gap-1"><Heart size={12} /> {ai.best.likes}</span>
                 <span className="flex items-center gap-1"><Play size={12} /> {ai.best.runs} runs</span>
                 {ai.best.rating != null && (
@@ -225,7 +225,7 @@ function AnswerCard({ ai, best }: { ai: NonNullable<AiSearchResult["ai"]>; best:
           </div>
           <Link
             href={`/agent/${ai.bestId}`}
-            className="flex shrink-0 items-center gap-2 rounded-md bg-blue-600 px-4 py-2 text-sm font-bold text-white transition-colors hover:bg-blue-500"
+            className="flex shrink-0 items-center gap-2 rounded-md bg-[#7c5cff] px-4 py-2 text-sm font-bold text-white transition-colors hover:bg-[#6b4cf0]"
           >
             View &amp; reuse <ArrowRight size={14} />
           </Link>

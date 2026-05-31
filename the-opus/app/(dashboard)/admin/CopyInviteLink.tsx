@@ -27,7 +27,7 @@ export default function CopyInviteLink({ token }: { token: string }) {
   return (
     <button
       onClick={copy}
-      className="inline-flex items-center gap-1 rounded border border-slate-700 px-2 py-1 text-xs font-medium text-slate-300 transition-colors hover:border-blue-500/50 hover:text-white"
+      className="inline-flex items-center gap-1 rounded border border-slate-200 px-2 py-1 text-xs font-medium text-slate-700 transition-colors hover:border-[#7c5cff]/40 hover:text-[#15161a]"
     >
       {copied ? <Check size={12} className="text-emerald-400" /> : <Copy size={12} />}
       {copied ? "Copied" : "Copy invite link"}

@@ -42,33 +42,33 @@ export default function ProfilePageClient({ initialAvatarPath }: { initialAvatar
     };
 
     return (
-        <div className="h-full bg-[#0b1120] p-10 flex flex-col justify-center items-center overflow-y-auto">
+        <div className="h-full bg-[#fbfbfa] p-10 flex flex-col justify-center items-center overflow-y-auto">
             <div className="w-full xl:w-11/12">
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 items-center justify-center">
 
                     {/* COLUMN 1: EDITABLE FIELDS */}
                     <div className="space-y-8 order-2 lg:order-1 w-full">
-                        <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-10 space-y-6 shadow-xl">
-                            <div className="flex items-center gap-3 text-slate-400">
+                        <div className="bg-white border border-slate-200 rounded-2xl p-10 space-y-6 shadow-xl">
+                            <div className="flex items-center gap-3 text-slate-500">
                                 <Briefcase size={22} />
                                 <label className="text-sm font-bold uppercase tracking-widest text-slate-500">Department</label>
                             </div>
                             <select
                                 value={department}
                                 onChange={(e) => setDepartment(e.target.value)}
-                                className="w-full bg-slate-950 border border-slate-700 rounded-xl p-5 text-lg text-slate-200 focus:ring-2 focus:ring-blue-500 transition-all outline-none"
+                                className="w-full bg-slate-100 border border-slate-200 rounded-xl p-5 text-lg text-[#15161a] focus:ring-2 focus:ring-[#7c5cff] transition-all outline-none"
                             >
                                 <option value="LEGAL">LEGAL</option>
                                 <option value="MARKETING">MARKETING</option>
                                 <option value="ENGINEERING">ENGINEERING</option>
                             </select>
-                            <button className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 rounded-xl flex items-center justify-center gap-2 transition-transform active:scale-[0.98]">
+                            <button className="w-full bg-[#7c5cff] hover:bg-[#6b4cf0] text-white font-bold py-4 rounded-xl flex items-center justify-center gap-2 transition-transform active:scale-[0.98]">
                                 <Save size={20} /> Save Changes
                             </button>
                         </div>
 
-                        <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-10 space-y-6 shadow-xl">
-                            <div className="flex items-center gap-3 text-slate-400">
+                        <div className="bg-white border border-slate-200 rounded-2xl p-10 space-y-6 shadow-xl">
+                            <div className="flex items-center gap-3 text-slate-500">
                                 <User size={22} />
                                 <label className="text-sm font-bold uppercase tracking-widest text-slate-500">Full Name</label>
                             </div>
@@ -76,9 +76,9 @@ export default function ProfilePageClient({ initialAvatarPath }: { initialAvatar
                                 type="text"
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}
-                                className="w-full bg-slate-950 border border-slate-700 rounded-xl p-5 text-lg text-slate-200 focus:ring-2 focus:ring-blue-500 outline-none"
+                                className="w-full bg-slate-100 border border-slate-200 rounded-xl p-5 text-lg text-[#15161a] focus:ring-2 focus:ring-[#7c5cff] outline-none"
                             />
-                            <button className="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-4 rounded-xl border border-slate-700 transition-all">
+                            <button className="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-4 rounded-xl border border-slate-200 transition-all">
                                 Update Info
                             </button>
                         </div>
@@ -86,18 +86,18 @@ export default function ProfilePageClient({ initialAvatarPath }: { initialAvatar
 
                     {/* COLUMN 2: AVATAR CENTERPIECE */}
                     <div className="relative group w-80 h-80 rounded-full p-2 bg-gradient-to-tr from-blue-600 via-sky-400 to-transparent shadow-[0_0_60px_rgba(37,99,235,0.25)]">
-                        <div className="w-full h-full rounded-full bg-slate-950 overflow-hidden relative">
+                        <div className="w-full h-full rounded-full bg-slate-100 overflow-hidden relative">
                             {avatarUrl
                                 ? <Image src={avatarUrl} alt="Avatar" fill className="object-cover" />
-                                : <div className="w-full h-full bg-slate-800 flex items-center justify-center">
+                                : <div className="w-full h-full bg-slate-100 flex items-center justify-center">
                                     <User size={140} className="text-slate-600" />
                                   </div>
                             }
                             <label className="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center text-white text-base font-bold cursor-pointer transition-all duration-300 backdrop-blur-md">
                                 {isPending
-                                    ? <span className="text-blue-400 animate-pulse">Uploading...</span>
+                                    ? <span className="text-[#7c5cff] animate-pulse">Uploading...</span>
                                     : <>
-                                        <Camera size={40} className="mb-2 text-blue-400" />
+                                        <Camera size={40} className="mb-2 text-[#7c5cff]" />
                                         <span>Update Avatar</span>
                                       </>
                                 }
@@ -108,8 +108,8 @@ export default function ProfilePageClient({ initialAvatarPath }: { initialAvatar
 
                     {/* COLUMN 3: ACTIONS & STATS */}
                     <div className="space-y-8 order-3 w-full">
-                        <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-10 space-y-6 shadow-xl">
-                            <div className="flex items-center gap-3 text-slate-400">
+                        <div className="bg-white border border-slate-200 rounded-2xl p-10 space-y-6 shadow-xl">
+                            <div className="flex items-center gap-3 text-slate-500">
                                 <ShieldAlert size={22} />
                                 <h4 className="text-sm font-bold uppercase tracking-widest text-slate-500">Workspace</h4>
                             </div>
@@ -122,18 +122,18 @@ export default function ProfilePageClient({ initialAvatarPath }: { initialAvatar
                             </button>
                         </div>
 
-                        <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-10 space-y-6 shadow-xl">
-                            <div className="flex items-center gap-3 text-slate-400 mb-2">
+                        <div className="bg-white border border-slate-200 rounded-2xl p-10 space-y-6 shadow-xl">
+                            <div className="flex items-center gap-3 text-slate-500 mb-2">
                                 <BarChart3 size={22} />
                                 <h4 className="text-sm font-bold uppercase tracking-widest text-slate-500">Insights</h4>
                             </div>
-                            <div className="flex justify-between items-center text-lg border-b border-slate-800 pb-4">
+                            <div className="flex justify-between items-center text-lg border-b border-slate-200 pb-4">
                                 <span className="text-slate-500">Tenure</span>
-                                <span className="text-slate-200 font-semibold tracking-wide">14 Months</span>
+                                <span className="text-[#15161a] font-semibold tracking-wide">14 Months</span>
                             </div>
                             <div className="flex justify-between items-center text-lg pt-2">
                                 <span className="text-slate-500">Global Rank</span>
-                                <span className="text-blue-400 font-bold italic">Top 5%</span>
+                                <span className="text-[#7c5cff] font-bold italic">Top 5%</span>
                             </div>
                         </div>
                     </div>

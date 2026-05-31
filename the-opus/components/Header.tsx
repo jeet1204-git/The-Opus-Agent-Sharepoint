@@ -27,14 +27,14 @@ export default function Header({
   }
 
   return (
-    <div className="border-b border-slate-800">
+    <div className="border-b border-slate-200">
       <div
-        className={`fixed inset-0 bg-black/60 transition-opacity duration-300 pointer-events-none ${
+        className={`fixed inset-0 bg-[#15161a]/10 transition-opacity duration-300 pointer-events-none ${
           isSearching ? 'opacity-100 z-40' : 'opacity-0 z-0'
         }`}
       />
 
-      <header className="h-16 border-b border-slate-800 flex items-center justify-between px-8 bg-[#0f172a] backdrop-blur-md relative z-50">
+      <header className="h-16 border-b border-slate-200 flex items-center justify-between px-8 bg-white/80 backdrop-blur-md relative z-50">
         <form
           onSubmit={onSubmit}
           className={`relative transition-all duration-300 ${
@@ -50,7 +50,7 @@ export default function Header({
             placeholder="Search agents by what you need… (semantic)"
             onFocus={() => setIsSearching(true)}
             onBlur={() => setIsSearching(false)}
-            className="w-full bg-slate-900 border border-slate-700 rounded-md py-2 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-white transition-all"
+            className="w-full bg-slate-100 border border-slate-200 rounded-md py-2 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-[#7c5cff] text-[#15161a] transition-all"
           />
         </form>
 
@@ -65,7 +65,7 @@ export default function Header({
                 e.preventDefault();
                 setIsOpen((prev) => !prev);
               }}
-              className="flex items-center gap-2 bg-slate-800 hover:bg-slate-700 transition-colors px-3 py-1.5 rounded-full cursor-pointer focus:outline-none select-none"
+              className="flex items-center gap-2 bg-slate-100 hover:bg-slate-200 transition-colors px-3 py-1.5 rounded-full cursor-pointer focus:outline-none select-none"
             >
               {avatarUrl ? (
                 <Image
@@ -80,27 +80,27 @@ export default function Header({
                   <User size={14} />
                 </div>
               )}
-              <span className="text-sm font-medium text-white">{userName}</span>
+              <span className="text-sm font-medium text-[#15161a]">{userName}</span>
             </button>
 
             {isOpen && (
               <>
                 <div className="fixed inset-0 z-10" onClick={() => setIsOpen(false)} />
-                <div className="absolute right-0 mt-2 w-56 rounded-md border border-slate-800 bg-slate-900 p-1 shadow-lg z-20 text-slate-200">
-                  <div className="px-3 py-2 border-b border-slate-800">
+                <div className="absolute right-0 mt-2 w-56 rounded-md border border-slate-200 bg-white p-1 shadow-lg z-20 text-[#15161a]">
+                  <div className="px-3 py-2 border-b border-slate-200">
                     <p className="text-xs text-slate-500">Signed in as</p>
-                    <p className="text-sm font-semibold truncate text-white">{userName}</p>
+                    <p className="text-sm font-semibold truncate text-[#15161a]">{userName}</p>
                   </div>
                   <div className="py-1">
                     <button
-                      className="w-full flex items-center gap-2 px-3 py-2 text-sm rounded-md hover:bg-slate-800 text-left transition-colors"
+                      className="w-full flex items-center gap-2 px-3 py-2 text-sm rounded-md hover:bg-slate-100 text-left transition-colors"
                       onClick={() => router.push('/profile')}
                     >
-                      <User size={16} className="text-slate-400" />
+                      <User size={16} className="text-slate-500" />
                       Profile
                     </button>
                   </div>
-                  <div className="border-t border-slate-800 pt-1 mt-1">
+                  <div className="border-t border-slate-200 pt-1 mt-1">
                     <SignOutButton />
                   </div>
                 </div>

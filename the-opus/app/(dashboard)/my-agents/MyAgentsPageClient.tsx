@@ -36,7 +36,7 @@ export default async function MyAgentsPageClient({ avatarUrl }: { avatarUrl: str
   const totalRuns = agents.reduce((s, a) => s + a.downloads, 0);
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#0b1120]">
+    <div className="flex flex-col min-h-screen bg-[#fbfbfa]">
       <div className="flex flex-col xl:flex-row flex-1 overflow-hidden">
 
         {/* MAIN CONTENT AREA */}
@@ -46,18 +46,18 @@ export default async function MyAgentsPageClient({ avatarUrl }: { avatarUrl: str
             {/* HEADER WITH CREATION CTA */}
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
               <div>
-                <h2 className="text-2xl font-bold mb-1 text-white">Your Workspace</h2>
+                <h2 className="text-2xl font-bold mb-1 text-[#15161a]">Your Workspace</h2>
                 <p className="text-slate-500 text-sm uppercase tracking-widest">Manage your built agents</p>
               </div>
-              <Link href="/upload" className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold px-4 py-2.5 rounded-lg transition-colors shadow-lg shadow-blue-900/20">
+              <Link href="/upload" className="flex items-center gap-2 bg-[#7c5cff] hover:bg-[#6b4cf0] text-white text-sm font-bold px-4 py-2.5 rounded-lg transition-colors shadow-lg shadow-blue-900/20">
                 <Plus size={16} /> Create New Agent
               </Link>
             </div>
 
             {/* MAIN PERSONAL GRID */}
             {agents.length === 0 ? (
-              <div className="rounded-xl border border-dashed border-slate-700 p-10 text-center text-slate-500">
-                You haven&apos;t published any agents yet. <Link href="/upload" className="text-blue-400">Publish one →</Link>
+              <div className="rounded-xl border border-dashed border-slate-200 p-10 text-center text-slate-500">
+                You haven&apos;t published any agents yet. <Link href="/upload" className="text-[#7c5cff]">Publish one →</Link>
               </div>
             ) : (
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -70,7 +70,7 @@ export default async function MyAgentsPageClient({ avatarUrl }: { avatarUrl: str
         </section>
 
         {/* SIDEBAR (Personal Analytics & Metrics) */}
-        <aside className="w-full xl:w-80 border-t xl:border-t-0 xl:border-l border-slate-800 p-6 bg-[#0f172a]">
+        <aside className="w-full xl:w-80 border-t xl:border-t-0 xl:border-l border-slate-200 p-6 bg-white">
           <AnalyticsSection agents={agents.length} endorsements={totalEndorsements} runs={totalRuns} />
         </aside>
       </div>
@@ -79,55 +79,55 @@ export default async function MyAgentsPageClient({ avatarUrl }: { avatarUrl: str
 }
 
 const AgentCard = ({ id, name, author, tags, description, likes, downloads, model, featured, avatarUrl }: any) => (
-  <div className={`p-6 rounded-xl border transition-all hover:border-slate-600 group flex flex-col ${
+  <div className={`p-6 rounded-xl border transition-all hover:border-slate-200 group flex flex-col ${
     featured
-      ? 'bg-blue-900/10 border-blue-500/50 ring-1 ring-blue-500/50'
-      : 'bg-slate-900/50 border-slate-800'
+      ? 'bg-blue-900/10 border-[#7c5cff]/40 ring-1 ring-blue-500/50'
+      : 'bg-white border-slate-200'
   }`}>
     <div className="flex justify-between items-start mb-4 gap-2">
       <div className="flex items-center gap-3">
-        <div className="flex items-center justify-center w-10 h-10 shrink-0 bg-slate-700 rounded-full border border-slate-600">
+        <div className="flex items-center justify-center w-10 h-10 shrink-0 bg-slate-700 rounded-full border border-slate-200">
           {avatarUrl ? (
             <img src={avatarUrl} alt={author} className="w-full h-full object-cover rounded-full" />
           ) : (
-            <User size={16} className="text-slate-400" />
+            <User size={16} className="text-slate-500" />
           )}
         </div>
         <div className="min-w-0">
-          <h4 className="font-bold leading-tight group-hover:text-blue-400 transition-colors truncate text-white"><Link href={`/agent/${id}`}>{name}</Link></h4>
-          <p className="text-xs text-slate-400 truncate">by {author}</p>
+          <h4 className="font-bold leading-tight group-hover:text-[#7c5cff] transition-colors truncate text-[#15161a]"><Link href={`/agent/${id}`}>{name}</Link></h4>
+          <p className="text-xs text-slate-500 truncate">by {author}</p>
         </div>
       </div>
-      <div className="flex items-center gap-1.5 px-2 py-1 bg-slate-950 border border-slate-800 rounded text-[10px] font-mono text-blue-400 whitespace-nowrap">
+      <div className="flex items-center gap-1.5 px-2 py-1 bg-slate-100 border border-slate-200 rounded text-[10px] font-mono text-[#7c5cff] whitespace-nowrap">
         <Cpu size={12} />
         {model}
       </div>
     </div>
 
-    <p className="text-sm text-slate-400 mb-4 line-clamp-2 leading-relaxed italic">
+    <p className="text-sm text-slate-500 mb-4 line-clamp-2 leading-relaxed italic">
       "{description}"
     </p>
 
     <div className="flex flex-wrap gap-2 mb-6">
       {tags.map((t: string) => (
-        <span key={t} className="px-2 py-0.5 bg-slate-800 text-[10px] font-bold rounded text-slate-300 border border-slate-700">
+        <span key={t} className="px-2 py-0.5 bg-slate-100 text-[10px] font-bold rounded text-slate-700 border border-slate-200">
           {t}
         </span>
       ))}
     </div>
 
-    <div className="flex items-center justify-between mt-auto pt-4 border-t border-slate-800/50">
+    <div className="flex items-center justify-between mt-auto pt-4 border-t border-slate-200/50">
       <div className="flex gap-4 text-slate-500">
         <div className="flex items-center gap-1 text-xs">
           <Heart size={14} className="group-hover:text-pink-500 transition-colors" />
           {likes.toLocaleString()}
         </div>
         <div className="flex items-center gap-1 text-xs">
-          <Download size={14} className="group-hover:text-blue-400 transition-colors" />
+          <Download size={14} className="group-hover:text-[#7c5cff] transition-colors" />
           {downloads.toLocaleString()}
         </div>
       </div>
-      <Link href={`/agent/${id}`} className="bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold px-4 py-2 rounded transition-all active:scale-95 shadow-lg shadow-blue-900/20">
+      <Link href={`/agent/${id}`} className="bg-[#7c5cff] hover:bg-[#6b4cf0] text-white text-xs font-bold px-4 py-2 rounded transition-all active:scale-95 shadow-lg shadow-blue-900/20">
         VIEW
       </Link>
     </div>
@@ -140,15 +140,15 @@ const AnalyticsSection = ({ agents, endorsements, runs }: { agents: number; endo
       <Trophy size={14} className="text-yellow-500" /> Workspace Impact
     </h3>
     <div className="space-y-5">
-      <div className="p-4 rounded-xl bg-slate-900/30 border border-slate-800/80">
+      <div className="p-4 rounded-xl bg-white border border-slate-200/80">
         <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Agents Published</p>
-        <p className="text-2xl font-mono font-bold text-white">{agents}</p>
+        <p className="text-2xl font-mono font-bold text-[#15161a]">{agents}</p>
       </div>
-      <div className="p-4 rounded-xl bg-slate-900/30 border border-slate-800/80">
+      <div className="p-4 rounded-xl bg-white border border-slate-200/80">
         <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Total Endorsements</p>
-        <p className="text-2xl font-mono font-bold text-white">{endorsements.toLocaleString()}</p>
+        <p className="text-2xl font-mono font-bold text-[#15161a]">{endorsements.toLocaleString()}</p>
       </div>
-      <div className="p-4 rounded-xl bg-slate-900/30 border border-slate-800/80">
+      <div className="p-4 rounded-xl bg-white border border-slate-200/80">
         <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Total Runs</p>
         <p className="text-2xl font-mono font-bold text-emerald-400">{runs.toLocaleString()}</p>
       </div>

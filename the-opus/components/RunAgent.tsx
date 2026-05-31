@@ -22,9 +22,9 @@ export function RunAgent({ assetId }: { assetId: string }) {
   }
 
   return (
-    <div className="rounded-xl border border-slate-800 bg-slate-900/40 p-5">
-      <h3 className="mb-3 flex items-center gap-2 font-bold text-white">
-        <Play size={16} className="text-blue-500" /> Run this agent
+    <div className="rounded-xl border border-slate-200 bg-white shadow-sm p-5">
+      <h3 className="mb-3 flex items-center gap-2 font-bold text-[#15161a]">
+        <Play size={16} className="text-[#7c5cff]" /> Run this agent
       </h3>
 
       <textarea
@@ -32,27 +32,27 @@ export function RunAgent({ assetId }: { assetId: string }) {
         onChange={(e) => setInput(e.target.value)}
         rows={4}
         placeholder="Paste the input you want to run through this agent…"
-        className="w-full rounded-md border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+        className="w-full rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-[#15161a] focus:outline-none focus:ring-2 focus:ring-[#7c5cff]"
       />
 
       <button
         onClick={run}
         disabled={running}
-        className="mt-3 flex items-center gap-2 rounded-md bg-blue-600 px-5 py-2 font-bold text-white transition-colors hover:bg-blue-500 disabled:opacity-50"
+        className="mt-3 flex items-center gap-2 rounded-md bg-[#15161a] px-5 py-2 font-bold text-white transition-colors hover:bg-black disabled:opacity-50"
       >
         {running ? <Loader2 size={16} className="animate-spin" /> : <Play size={16} />}
         {running ? "Running…" : "Run"}
       </button>
 
       {error && (
-        <div className="mt-3 rounded-md border border-red-500/30 bg-red-500/10 px-3 py-2 text-sm text-red-400">
+        <div className="mt-3 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600">
           {error}
         </div>
       )}
       {output && (
         <div className="mt-3">
-          <p className="mb-1 text-xs font-medium uppercase tracking-wider text-slate-400">Output</p>
-          <pre className="max-h-96 overflow-auto whitespace-pre-wrap rounded-md border border-slate-700 bg-slate-950 p-3 text-sm text-slate-200">
+          <p className="mb-1 text-xs font-medium uppercase tracking-wider text-slate-500">Output</p>
+          <pre className="max-h-96 overflow-auto whitespace-pre-wrap rounded-md border border-slate-200 bg-slate-50 p-3 text-sm text-[#15161a]">
             {output}
           </pre>
         </div>
