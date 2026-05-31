@@ -68,7 +68,7 @@ export default function AgentDetailPageClient({ agent, liked, locked = false, re
           </div>
           <p className="text-slate-700 leading-relaxed text-sm">{meta.purpose || agent.description || 'No description provided.'}</p>
           {meta.requirements && (
-            <p className="text-xs text-slate-500 mt-4"><span className="text-slate-400 font-bold uppercase">Requirements: </span>{meta.requirements}</p>
+            <p className="text-xs text-slate-500 mt-4"><span className="text-slate-500 font-bold uppercase">Requirements: </span>{meta.requirements}</p>
           )}
           {meta.when_not_to_use && (
             <div className="mt-4 flex items-start gap-2 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-700">
@@ -94,7 +94,7 @@ export default function AgentDetailPageClient({ agent, liked, locked = false, re
             <div className="bg-white border border-slate-200 shadow-sm rounded-xl p-6">
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-xs font-bold uppercase tracking-widest text-slate-500">System Prompt / Config</h3>
-                <Copy size={14} className="text-slate-400" />
+                <Copy size={14} className="text-slate-500" />
               </div>
               <pre className="font-mono text-xs text-[#5b4bd6] bg-slate-50 p-4 rounded-lg border border-slate-200 max-h-64 overflow-auto whitespace-pre-wrap">
                 {agent.content || '(no content)'}
@@ -148,7 +148,7 @@ export default function AgentDetailPageClient({ agent, liked, locked = false, re
             <div className="pt-2">
               <p className="text-[10px] font-bold text-slate-500 uppercase mb-2">Tools</p>
               <div className="flex flex-wrap gap-2">
-                {tools.length === 0 && <span className="text-[10px] text-slate-400">none declared</span>}
+                {tools.length === 0 && <span className="text-[10px] text-slate-500">none declared</span>}
                 {tools.map((t) => (
                   <span key={t} className="text-[10px] bg-[#7c5cff]/10 text-[#7c5cff] px-2 py-1 rounded">{t}</span>
                 ))}
@@ -163,7 +163,7 @@ export default function AgentDetailPageClient({ agent, liked, locked = false, re
             <GitBranch size={14} /> Versions
           </h3>
           <div className="space-y-3">
-            {versions.length === 0 && <p className="text-[10px] text-slate-400">No versions.</p>}
+            {versions.length === 0 && <p className="text-[10px] text-slate-500">No versions.</p>}
             {versions.map((v: any) => (
               <div key={v.id} className="flex justify-between items-center text-sm border-b border-slate-200 pb-2">
                 <span className="text-[#15161a] font-mono">{v.version_label}</span>
@@ -225,7 +225,7 @@ const ReviewCard = ({ name, date, content, rating, avatarUrl }: any) => (
           {avatarUrl
             ? <Image src={avatarUrl} alt={name} fill className="object-cover" />
             : <div className="w-full h-full flex items-center justify-center">
-              <User size={14} className="text-slate-400" />
+              <User size={14} className="text-slate-500" />
             </div>
           }
         </div>

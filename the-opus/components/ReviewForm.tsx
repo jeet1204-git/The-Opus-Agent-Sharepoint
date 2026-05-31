@@ -23,7 +23,7 @@ export function ReviewForm({
   if (locked) {
     return (
       <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-500">
-        <Lock size={14} className="shrink-0 text-slate-400" />
+        <Lock size={14} className="shrink-0 text-slate-500" />
         Reviewing is limited to the {department ?? "owning"} department.
       </div>
     );
@@ -43,7 +43,7 @@ export function ReviewForm({
       <div className="mb-3 flex items-center gap-1">
         {[1, 2, 3, 4, 5].map((n) => (
           <button key={n} onClick={() => setRating(n)} type="button">
-            <Star size={16} className={n <= rating ? "text-yellow-500" : "text-slate-300"} fill={n <= rating ? "currentColor" : "none"} />
+            <Star size={16} className={n <= rating ? "text-yellow-500" : "text-slate-700"} fill={n <= rating ? "currentColor" : "none"} />
           </button>
         ))}
       </div>

@@ -123,7 +123,7 @@ const TrendingCard = ({ agent, rank }: any) => (
       <TrendingUp size={40} />
     </div>
     <div className="relative z-10 flex items-center gap-3">
-      <span className="text-2xl font-black text-slate-300 group-hover:text-[#7c5cff]/60 transition-colors">
+      <span className="text-2xl font-black text-slate-700 group-hover:text-[#7c5cff]/60 transition-colors">
         0{rank}
       </span>
       <div className="min-w-0">
@@ -146,7 +146,7 @@ const AgentCard = ({ id, name, author, avatarUrl, tags, description, likes, down
           {avatarUrl
             ? <Image src={avatarUrl} alt={author} fill className="object-cover" />
             : <div className="w-full h-full flex items-center justify-center">
-                <User size={16} className="text-slate-400" />
+                <User size={16} className="text-slate-500" />
               </div>
           }
         </div>
@@ -215,7 +215,7 @@ const LeaderboardSection = ({ leaders }: { leaders: [string, number][] }) => (
             </div>
             <p className="text-sm font-medium text-slate-700 group-hover:text-[#15161a] transition-colors">{name}</p>
           </div>
-          <div className="text-[10px] font-mono text-slate-400">
+          <div className="text-[10px] font-mono text-slate-500">
             {n} agent{n === 1 ? '' : 's'}
           </div>
         </div>

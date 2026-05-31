@@ -20,9 +20,9 @@ type MetricCardProps = {
 
 function MetricCard({ label, value, sub }: MetricCardProps) {
   return (
-    <div className="bg-slate-900 rounded-xl border border-slate-800 p-5">
+    <div className="bg-white rounded-xl border border-slate-200 p-5">
       <p className="text-xs text-slate-500 mb-2 uppercase tracking-widest font-bold">{label}</p>
-      <p className="text-3xl font-bold text-white">{value}</p>
+      <p className="text-3xl font-bold text-[#15161a]">{value}</p>
       {sub && <p className="text-xs text-slate-600 mt-1">{sub}</p>}
     </div>
   );
@@ -42,7 +42,7 @@ function verdictBadge(verdict: string) {
       </span>
     );
   return (
-    <span className="inline-flex items-center rounded-full bg-slate-800 px-2 py-0.5 text-[10px] font-bold text-slate-400">
+    <span className="inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-500">
       {verdict}
     </span>
   );
@@ -60,7 +60,7 @@ function SimBar({ value }: { value: number | null }) {
         : "bg-emerald-500";
   return (
     <div className="flex items-center gap-2">
-      <div className="flex-1 h-1.5 rounded-full bg-slate-800 overflow-hidden">
+      <div className="flex-1 h-1.5 rounded-full bg-slate-100 overflow-hidden">
         <div
           className={`h-full rounded-full ${color}`}
           style={{ width: `${Math.min(pct * 5, 100)}%` }}
@@ -110,12 +110,12 @@ export default async function SearchGapsPage({
   const totalPages = Math.ceil((count ?? 0) / PAGE_SIZE);
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#0b1120]">
+    <div className="flex flex-col min-h-screen bg-[#fbfbfa]">
       <section className="flex-1 overflow-y-auto p-4 md:p-8 max-w-6xl mx-auto w-full">
 
         {/* Header */}
         <div className="mb-6">
-          <h2 className="flex items-center gap-2.5 text-2xl font-bold text-white mb-1">
+          <h2 className="flex items-center gap-2.5 text-2xl font-bold text-[#15161a] mb-1">
             <TrendingDown size={22} className="text-slate-500" />
             Search gaps
           </h2>
@@ -141,8 +141,8 @@ export default async function SearchGapsPage({
               href={v ? `?verdict=${v}` : "?"}
               className={`rounded-full px-3 py-1 text-xs font-bold border transition-colors ${
                 (verdict ?? "") === v
-                  ? "bg-blue-600 border-blue-600 text-white"
-                  : "border-slate-700 text-slate-400 hover:border-slate-500"
+                  ? "bg-[#7c5cff] border-[#7c5cff] text-white"
+                  : "border-slate-200 text-slate-500 hover:border-slate-500"
               }`}
             >
               {v === "" ? "All" : v}
@@ -151,9 +151,9 @@ export default async function SearchGapsPage({
         </div>
 
         {/* Table */}
-        <div className="rounded-xl border border-slate-800 overflow-hidden">
+        <div className="rounded-xl border border-slate-200 overflow-hidden">
           <table className="w-full text-sm">
-            <thead className="bg-slate-900 border-b border-slate-800">
+            <thead className="bg-white border-b border-slate-200">
               <tr>
                 <th className="text-left px-4 py-3 text-xs font-bold uppercase tracking-widest text-slate-500 w-[35%]">
                   Query
@@ -172,7 +172,7 @@ export default async function SearchGapsPage({
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-800/60">
+            <tbody className="divide-y divide-slate-100">
               {(gaps ?? []).length === 0 && (
                 <tr>
                   <td colSpan={5} className="text-center py-16 text-slate-600">
@@ -182,8 +182,8 @@ export default async function SearchGapsPage({
                 </tr>
               )}
               {(gaps ?? []).map((gap) => (
-                <tr key={gap.id} className="hover:bg-slate-900/60 transition-colors">
-                  <td className="px-4 py-3 text-white font-medium truncate max-w-0">
+                <tr key={gap.id} className="hover:bg-white/60 transition-colors">
+                  <td className="px-4 py-3 text-[#15161a] font-medium truncate max-w-0">
                     <span title={gap.query}>{gap.query}</span>
                   </td>
                   <td className="px-4 py-3">{verdictBadge(gap.verdict)}</td>
@@ -216,7 +216,7 @@ export default async function SearchGapsPage({
               {currentPage > 0 && (
                 <Link
                   href={`?${verdict ? `verdict=${verdict}&` : ""}page=${currentPage - 1}`}
-                  className="rounded-md border border-slate-700 px-4 py-1.5 text-sm text-slate-300 hover:border-slate-500 transition-colors"
+                  className="rounded-md border border-slate-200 px-4 py-1.5 text-sm text-slate-700 hover:border-slate-500 transition-colors"
                 >
                   Previous
                 </Link>
@@ -224,7 +224,7 @@ export default async function SearchGapsPage({
               {currentPage < totalPages - 1 && (
                 <Link
                   href={`?${verdict ? `verdict=${verdict}&` : ""}page=${currentPage + 1}`}
-                  className="rounded-md border border-slate-700 px-4 py-1.5 text-sm text-slate-300 hover:border-slate-500 transition-colors"
+                  className="rounded-md border border-slate-200 px-4 py-1.5 text-sm text-slate-700 hover:border-slate-500 transition-colors"
                 >
                   Next
                 </Link>

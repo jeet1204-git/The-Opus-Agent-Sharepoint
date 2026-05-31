@@ -121,7 +121,7 @@ export default async function ImpactPage() {
                     style={{ height: `${Math.max(4, (c / maxWeek) * 100)}%` }}
                     title={`${c} reuse events`}
                   />
-                  <span className="text-[10px] text-slate-400">
+                  <span className="text-[10px] text-slate-500">
                     {i === WEEKS - 1 ? "now" : `-${WEEKS - 1 - i}w`}
                   </span>
                 </div>
@@ -138,7 +138,7 @@ export default async function ImpactPage() {
               Most-reused agents
             </h3>
             <div className="space-y-1">
-              <div className="grid grid-cols-12 px-3 pb-2 text-[10px] uppercase tracking-wider text-slate-400">
+              <div className="grid grid-cols-12 px-3 pb-2 text-[10px] uppercase tracking-wider text-slate-500">
                 <span className="col-span-5">Agent</span>
                 <span className="col-span-2 text-right">Reuses</span>
                 <span className="col-span-2 text-right">Adopters</span>
@@ -160,7 +160,7 @@ export default async function ImpactPage() {
         </div>
 
         {/* Honest methodology */}
-        <p className="max-w-4xl text-xs leading-relaxed text-slate-400 border-t border-slate-200 pt-4">
+        <p className="max-w-4xl text-xs leading-relaxed text-slate-500 border-t border-slate-200 pt-4">
           <span className="font-semibold text-slate-500">How this is calculated:</span> a “rebuild avoided” is a
           distinct (teammate × agent) adoption — someone running or downloading an agent that already existed
           instead of building their own. Each is priced at a conservative {HOURS_PER_REBUILD} engineering hours

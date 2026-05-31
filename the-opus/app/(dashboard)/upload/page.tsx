@@ -34,9 +34,9 @@ function FieldHint({ issues, field }: { issues: ContractIssue[]; field: string }
 }
 
 const inputCls =
-  "w-full rounded-md border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500";
+  "w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-[#15161a] focus:outline-none focus:ring-2 focus:ring-[#7c5cff]";
 const labelCls =
-  "mb-1 block text-xs font-medium uppercase tracking-wider text-slate-400";
+  "mb-1 block text-xs font-medium uppercase tracking-wider text-slate-500";
 
 export default function UploadPage() {
   const [state, formAction, pending] = useActionState(createAsset, initial);
@@ -74,9 +74,9 @@ export default function UploadPage() {
 
   return (
     <>
-      <header className="h-16 border-b border-slate-800 flex items-center gap-3 px-8 bg-[#0f172a]/50 backdrop-blur-md">
-        <UploadCloud size={20} className="text-blue-500" />
-        <h1 className="text-lg font-bold text-white">Publish an agent</h1>
+      <header className="h-16 border-b border-slate-200 flex items-center gap-3 px-8 bg-white/60 backdrop-blur-md">
+        <UploadCloud size={20} className="text-[#7c5cff]" />
+        <h1 className="text-lg font-bold text-[#15161a]">Publish an agent</h1>
         {checking && (
           <span className="flex items-center gap-1 text-xs text-slate-500">
             <Loader2 size={12} className="animate-spin" /> checking for duplicates…
@@ -84,7 +84,7 @@ export default function UploadPage() {
         )}
       </header>
 
-      <div className="flex-1 overflow-y-auto p-8 bg-[#0b1120]">
+      <div className="flex-1 overflow-y-auto p-8 bg-[#fbfbfa]">
         {/* The hero: duplicate detector */}
         {dupes.length > 0 && (
           <div className="mb-6 max-w-3xl rounded-xl border border-amber-500/40 bg-amber-500/10 p-5">
@@ -105,11 +105,11 @@ export default function UploadPage() {
                 <Link
                   key={d.id}
                   href={`/agent/${d.id}`}
-                  className="flex items-center justify-between rounded-lg border border-slate-700 bg-slate-900/60 px-4 py-3 transition-colors hover:border-blue-500/50"
+                  className="flex items-center justify-between rounded-lg border border-slate-200 bg-white/60 px-4 py-3 transition-colors hover:border-[#7c5cff]/40"
                 >
                   <div>
-                    <p className="font-semibold text-white">{d.title}</p>
-                    <p className="text-xs text-slate-400">
+                    <p className="font-semibold text-[#15161a]">{d.title}</p>
+                    <p className="text-xs text-slate-500">
                       {d.metadata?.purpose ?? d.description ?? d.type}
                     </p>
                   </div>
@@ -117,7 +117,7 @@ export default function UploadPage() {
                     <span className="rounded-full bg-amber-500/20 px-2 py-0.5 text-xs font-bold text-amber-300">
                       {Math.round(d.similarity * 100)}% match
                     </span>
-                    <span className="flex items-center gap-1 text-xs font-medium text-blue-400">
+                    <span className="flex items-center gap-1 text-xs font-medium text-[#7c5cff]">
                       <Copy size={12} /> View &amp; reuse
                     </span>
                   </div>
@@ -166,7 +166,7 @@ export default function UploadPage() {
           </div>
 
           {/* Contract metadata */}
-          <div className="rounded-xl border border-slate-800 bg-slate-900/40 p-6 space-y-4">
+          <div className="rounded-xl border border-slate-200 bg-white p-6 space-y-4">
             <p className="text-xs font-bold uppercase tracking-widest text-slate-500">The contract — what another team needs to reuse this</p>
 
             <div>
@@ -213,7 +213,7 @@ export default function UploadPage() {
             </div>
 
             {/* Department scope */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 border-t border-slate-800 pt-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 border-t border-slate-200 pt-4">
               <div>
                 <label className={labelCls}>Department</label>
                 <select
@@ -230,15 +230,15 @@ export default function UploadPage() {
               </div>
               <div className="flex items-end">
                 <label
-                  className={`flex items-center gap-2 text-sm ${dept ? "text-slate-300" : "text-slate-600"}`}
+                  className={`flex items-center gap-2 text-sm ${dept ? "text-slate-700" : "text-slate-600"}`}
                 >
-                  <input type="checkbox" name="restricted" disabled={!dept} className="h-4 w-4 rounded border-slate-600 bg-slate-900 accent-blue-600" />
+                  <input type="checkbox" name="restricted" disabled={!dept} className="h-4 w-4 rounded border-slate-200 bg-white accent-blue-600" />
                   Restrict payload to {dept || "this department"} only
                 </label>
               </div>
             </div>
             <p className="text-xs text-slate-500">
-              Restricted agents stay <span className="text-slate-400">discoverable by everyone</span> (title,
+              Restricted agents stay <span className="text-slate-500">discoverable by everyone</span> (title,
               description, trust signals) — but only {dept || "the chosen department"} (and admins) can see the
               prompt/file and run it.
             </p>
@@ -253,13 +253,13 @@ export default function UploadPage() {
 
           <div>
             <label className={labelCls}>Or upload a config file (optional)</label>
-            <input name="file" type="file" className="block w-full text-sm text-slate-400 file:mr-4 file:rounded-md file:border-0 file:bg-slate-800 file:px-4 file:py-2 file:text-sm file:font-medium file:text-white hover:file:bg-slate-700" />
+            <input name="file" type="file" className="block w-full text-sm text-slate-500 file:mr-4 file:rounded-md file:border-0 file:bg-slate-100 file:px-4 file:py-2 file:text-sm file:font-medium file:text-[#15161a] hover:file:bg-slate-200" />
           </div>
 
           <button
             type="submit"
             disabled={pending}
-            className="rounded-md bg-blue-600 px-6 py-2.5 font-bold text-white transition-colors hover:bg-blue-500 disabled:opacity-50"
+            className="rounded-md bg-[#7c5cff] px-6 py-2.5 font-bold text-white transition-colors hover:bg-[#6b4cf0] disabled:opacity-50"
           >
             {pending ? "Publishing…" : "Publish to registry"}
           </button>

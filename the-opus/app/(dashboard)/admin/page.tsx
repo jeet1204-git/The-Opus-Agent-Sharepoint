@@ -38,24 +38,24 @@ export default async function AdminPage({
   const invitedCount = list.filter((r) => r.status === "invited").length;
 
   const inputCls =
-    "w-full rounded-md border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500";
-  const labelCls = "mb-1 block text-xs font-medium uppercase tracking-wider text-slate-400";
+    "w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-[#15161a] focus:outline-none focus:ring-2 focus:ring-[#7c5cff]";
+  const labelCls = "mb-1 block text-xs font-medium uppercase tracking-wider text-slate-500";
 
   return (
     <>
-      <header className="h-16 border-b border-slate-800 flex items-center gap-3 px-8 bg-[#0f172a]/50 backdrop-blur-md">
-        <Shield size={20} className="text-blue-500" />
-        <h1 className="text-lg font-bold text-white">Admin</h1>
+      <header className="h-16 border-b border-slate-200 flex items-center gap-3 px-8 bg-white/60 backdrop-blur-md">
+        <Shield size={20} className="text-[#7c5cff]" />
+        <h1 className="text-lg font-bold text-[#15161a]">Admin</h1>
         <span className="text-sm text-slate-500">· {orgTyped?.name ?? "Organization"}</span>
       </header>
 
-      <div className="flex-1 overflow-y-auto p-8 bg-[#0b1120]">
+      <div className="flex-1 overflow-y-auto p-8 bg-[#fbfbfa]">
         <div className="space-y-10">
           {/* Invite employee */}
           <section>
-            <h2 className="text-xl font-bold text-white mb-1">Invite an employee</h2>
+            <h2 className="text-xl font-bold text-[#15161a] mb-1">Invite an employee</h2>
             <p className="text-sm text-slate-500 mb-4">
-              Authorize a work email for <span className="text-slate-300">{orgTyped?.name}</span>.
+              Authorize a work email for <span className="text-slate-700">{orgTyped?.name}</span>.
               Only emails on this list can sign up — the employee sets their own password from
               the activation link.
             </p>
@@ -71,7 +71,7 @@ export default async function AdminPage({
               </div>
             )}
 
-            <form action={inviteEmployee} className="grid grid-cols-1 md:grid-cols-2 gap-4 rounded-xl border border-slate-800 bg-slate-900/40 p-6">
+            <form action={inviteEmployee} className="grid grid-cols-1 md:grid-cols-2 gap-4 rounded-xl border border-slate-200 bg-white p-6">
               <div>
                 <label className={labelCls}>Full name</label>
                 <input name="full_name" className={inputCls} placeholder="Jane Doe" />
@@ -97,7 +97,7 @@ export default async function AdminPage({
                 </select>
               </div>
               <div className="md:col-span-2">
-                <button type="submit" className="inline-flex items-center gap-2 rounded-md bg-blue-600 px-5 py-2 font-bold text-white transition-colors hover:bg-blue-500">
+                <button type="submit" className="inline-flex items-center gap-2 rounded-md bg-[#7c5cff] px-5 py-2 font-bold text-white transition-colors hover:bg-[#6b4cf0]">
                   <UserPlus size={16} /> Invite employee
                 </button>
               </div>
@@ -108,20 +108,20 @@ export default async function AdminPage({
           <section>
             <div className="mb-4 flex items-center justify-between">
               <div>
-                <h2 className="text-xl font-bold text-white">Roster ({list.length})</h2>
+                <h2 className="text-xl font-bold text-[#15161a]">Roster ({list.length})</h2>
                 <p className="text-sm text-slate-500">{activeCount} active · {invitedCount} pending</p>
               </div>
               <a
                 href="/admin/export"
-                className="inline-flex items-center gap-2 rounded-md border border-slate-700 px-4 py-2 text-sm font-medium text-slate-200 transition-colors hover:border-blue-500/50 hover:text-white"
+                className="inline-flex items-center gap-2 rounded-md border border-slate-200 px-4 py-2 text-sm font-medium text-[#15161a] transition-colors hover:border-[#7c5cff]/40 hover:text-[#15161a]"
               >
                 <Download size={16} /> Export CSV
               </a>
             </div>
 
-            <div className="overflow-hidden rounded-xl border border-slate-800">
+            <div className="overflow-hidden rounded-xl border border-slate-200">
               <table className="w-full text-sm">
-                <thead className="bg-slate-900 text-slate-400">
+                <thead className="bg-white text-slate-500">
                   <tr>
                     <th className="px-4 py-3 text-left font-medium">Name</th>
                     <th className="px-4 py-3 text-left font-medium">Email</th>
@@ -131,14 +131,14 @@ export default async function AdminPage({
                     <th className="px-4 py-3 text-right font-medium">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-800">
+                <tbody className="divide-y divide-slate-100">
                   {list.map((r) => (
-                    <tr key={r.id} className="bg-slate-900/30">
-                      <td className="px-4 py-3 text-white">{r.full_name ?? "—"}</td>
-                      <td className="px-4 py-3 text-slate-400">{r.email}</td>
-                      <td className="px-4 py-3 text-slate-400">{r.department ?? "—"}</td>
+                    <tr key={r.id} className="bg-white">
+                      <td className="px-4 py-3 text-[#15161a]">{r.full_name ?? "—"}</td>
+                      <td className="px-4 py-3 text-slate-500">{r.email}</td>
+                      <td className="px-4 py-3 text-slate-500">{r.department ?? "—"}</td>
                       <td className="px-4 py-3">
-                        <span className={`rounded px-2 py-0.5 text-xs font-bold ${r.role === "admin" ? "bg-blue-600/20 text-blue-400" : "bg-slate-800 text-slate-400"}`}>
+                        <span className={`rounded px-2 py-0.5 text-xs font-bold ${r.role === "admin" ? "bg-[#7c5cff]/20 text-[#7c5cff]" : "bg-slate-100 text-slate-500"}`}>
                           {r.role}
                         </span>
                       </td>
@@ -153,13 +153,13 @@ export default async function AdminPage({
                             {r.activation_token && <CopyInviteLink token={r.activation_token} />}
                             <form action={regenerateInvite}>
                               <input type="hidden" name="id" value={r.id} />
-                              <button title="Re-issue link" className="rounded border border-slate-700 p-1.5 text-slate-400 transition-colors hover:border-blue-500/50 hover:text-white">
+                              <button title="Re-issue link" className="rounded border border-slate-200 p-1.5 text-slate-500 transition-colors hover:border-[#7c5cff]/40 hover:text-[#15161a]">
                                 <RefreshCw size={12} />
                               </button>
                             </form>
                             <form action={removeInvite}>
                               <input type="hidden" name="id" value={r.id} />
-                              <button title="Remove" className="rounded border border-slate-700 p-1.5 text-slate-400 transition-colors hover:border-red-500/50 hover:text-red-400">
+                              <button title="Remove" className="rounded border border-slate-200 p-1.5 text-slate-500 transition-colors hover:border-red-500/50 hover:text-red-400">
                                 <Trash2 size={12} />
                               </button>
                             </form>

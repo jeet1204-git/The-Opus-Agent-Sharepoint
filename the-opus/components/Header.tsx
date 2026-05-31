@@ -96,7 +96,7 @@ export default function Header({
                       className="w-full flex items-center gap-2 px-3 py-2 text-sm rounded-md hover:bg-slate-100 text-left transition-colors"
                       onClick={() => router.push('/profile')}
                     >
-                      <User size={16} className="text-slate-400" />
+                      <User size={16} className="text-slate-500" />
                       Profile
                     </button>
                   </div>

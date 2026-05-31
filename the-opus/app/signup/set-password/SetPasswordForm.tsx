@@ -20,7 +20,7 @@ export default function SetPasswordForm({ token }: { token: string }) {
       )}
 
       <div>
-        <label className="mb-1 block text-xs font-medium uppercase tracking-wider text-slate-400">
+        <label className="mb-1 block text-xs font-medium uppercase tracking-wider text-slate-500">
           New password
         </label>
         <input
@@ -29,12 +29,12 @@ export default function SetPasswordForm({ token }: { token: string }) {
           required
           minLength={8}
           autoComplete="new-password"
-          className="w-full rounded-md border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-[#15161a] focus:outline-none focus:ring-2 focus:ring-[#7c5cff]"
           placeholder="At least 8 characters"
         />
       </div>
       <div>
-        <label className="mb-1 block text-xs font-medium uppercase tracking-wider text-slate-400">
+        <label className="mb-1 block text-xs font-medium uppercase tracking-wider text-slate-500">
           Confirm password
         </label>
         <input
@@ -43,7 +43,7 @@ export default function SetPasswordForm({ token }: { token: string }) {
           required
           minLength={8}
           autoComplete="new-password"
-          className="w-full rounded-md border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-[#15161a] focus:outline-none focus:ring-2 focus:ring-[#7c5cff]"
           placeholder="Re-enter password"
         />
       </div>
@@ -51,7 +51,7 @@ export default function SetPasswordForm({ token }: { token: string }) {
       <button
         type="submit"
         disabled={pending}
-        className="flex w-full items-center justify-center gap-2 rounded-md bg-blue-600 py-2 font-bold text-white transition-colors hover:bg-blue-500 disabled:opacity-50"
+        className="flex w-full items-center justify-center gap-2 rounded-md bg-[#7c5cff] py-2 font-bold text-white transition-colors hover:bg-[#6b4cf0] disabled:opacity-50"
       >
         {pending ? <Loader2 size={16} className="animate-spin" /> : <Lock size={16} />}
         {pending ? "Activating…" : "Activate & sign in"}

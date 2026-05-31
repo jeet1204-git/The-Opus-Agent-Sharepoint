@@ -118,12 +118,12 @@ export default function NotificationBell() {
       <button
         ref={buttonRef}
         onClick={() => setOpen((prev) => !prev)}
-        className="relative p-1 rounded-md text-slate-400 hover:text-white transition-colors focus:outline-none"
+        className="relative p-1 rounded-md text-slate-500 hover:text-[#15161a] transition-colors focus:outline-none"
         aria-label="Notifications"
       >
         <Bell size={20} />
         {unreadCount > 0 && (
-          <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-blue-500 text-[10px] font-bold text-white leading-none">
+          <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-[#7c5cff] text-[10px] font-bold text-[#15161a] leading-none">
             {unreadCount > 9 ? '9+' : unreadCount}
           </span>
         )}
@@ -133,19 +133,19 @@ export default function NotificationBell() {
       {open && (
         <div
           ref={panelRef}
-          className="absolute right-0 mt-2 w-80 rounded-lg border border-slate-700 bg-slate-900 shadow-2xl z-50 flex flex-col overflow-hidden"
+          className="absolute right-0 mt-2 w-80 rounded-lg border border-slate-200 bg-white shadow-2xl z-50 flex flex-col overflow-hidden"
           style={{ maxHeight: '420px' }}
         >
           {/* Header */}
-          <div className="flex items-center justify-between px-4 py-3 border-b border-slate-800 shrink-0">
-            <span className="text-sm font-semibold text-white">Notifications</span>
+          <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200 shrink-0">
+            <span className="text-sm font-semibold text-[#15161a]">Notifications</span>
             {unreadCount > 0 && (
-              <span className="text-xs text-slate-400">{unreadCount} unread</span>
+              <span className="text-xs text-slate-500">{unreadCount} unread</span>
             )}
           </div>
 
           {/* Scrollable list */}
-          <div className="overflow-y-auto flex-1 divide-y divide-slate-800/60">
+          <div className="overflow-y-auto flex-1 divide-y divide-slate-100">
             {loading ? (
               <div className="px-4 py-6 text-center text-sm text-slate-500">Loading…</div>
             ) : notifications.length === 0 ? (
@@ -161,34 +161,34 @@ export default function NotificationBell() {
                   className={[
                     'w-full text-left px-4 py-3 flex gap-3 transition-colors',
                     n.link
-                      ? 'hover:bg-slate-800 cursor-pointer'
+                      ? 'hover:bg-slate-100 cursor-pointer'
                       : 'cursor-default',
-                    !n.is_read ? 'bg-slate-800/40' : '',
+                    !n.is_read ? 'bg-[#7c5cff]/5' : '',
                   ].join(' ')}
                 >
                   {/* Unread dot */}
                   <span className="mt-1.5 shrink-0">
                     {!n.is_read ? (
-                      <span className="block w-2 h-2 rounded-full bg-blue-500" />
+                      <span className="block w-2 h-2 rounded-full bg-[#7c5cff]" />
                     ) : (
                       <span className="block w-2 h-2 rounded-full bg-transparent" />
                     )}
                   </span>
 
                   <span className="flex-1 min-w-0">
-                    <span className="block text-sm font-medium text-white truncate">
+                    <span className="block text-sm font-medium text-[#15161a] truncate">
                       {n.title}
                     </span>
-                    <span className="block text-xs text-slate-400 mt-0.5 line-clamp-2">
+                    <span className="block text-xs text-slate-500 mt-0.5 line-clamp-2">
                       {n.message}
                     </span>
-                    <span className="block text-[11px] text-slate-600 mt-1">
+                    <span className="block text-[11px] text-slate-500 mt-1">
                       {formatTime(n.created_at)}
                     </span>
                   </span>
 
                   {n.link && (
-                    <span className="shrink-0 self-center text-slate-600 text-xs">→</span>
+                    <span className="shrink-0 self-center text-slate-500 text-xs">→</span>
                   )}
                 </button>
               ))

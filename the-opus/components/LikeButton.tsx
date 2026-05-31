@@ -27,7 +27,7 @@ export function LikeButton({
     return (
       <div
         title="Endorsing is limited to this agent's department"
-        className="flex items-center gap-2 px-4 py-2 rounded border font-bold bg-white border-slate-200 text-slate-400 cursor-not-allowed"
+        className="flex items-center gap-2 px-4 py-2 rounded border font-bold bg-white border-slate-200 text-slate-500 cursor-not-allowed"
       >
         <Heart size={16} fill="none" />
         {initialCount}
