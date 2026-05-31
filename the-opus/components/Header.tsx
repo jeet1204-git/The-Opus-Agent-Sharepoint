@@ -2,92 +2,113 @@
 
 import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { Search, Bell, User } from 'lucide-react';
+import { Search, User } from 'lucide-react';
 import { SignOutButton } from './SignOutButton';
 import Image from 'next/image';
+import NotificationBell from './NotificationBell';
 
-export default function Header({ userName = 'User', avatarUrl }: { userName?: string; avatarUrl?: string | null }) {
-    const [isOpen, setIsOpen] = useState(false);
-    const [isSearching, setIsSearching] = useState(false);
-    const [q, setQ] = useState('');
-    const searchRef = useRef<HTMLInputElement>(null);
-    const router = useRouter();
+export default function Header({
+  userName = 'User',
+  avatarUrl,
+}: {
+  userName?: string;
+  avatarUrl?: string | null;
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
+  const [q, setQ] = useState('');
+  const searchRef = useRef<HTMLInputElement>(null);
+  const router = useRouter();
 
-    function onSubmit(e: React.FormEvent) {
-        e.preventDefault();
-        const query = q.trim();
-        if (query) router.push(`/search?q=${encodeURIComponent(query)}`);
-    }
+  function onSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    const query = q.trim();
+    if (query) router.push(`/search?q=${encodeURIComponent(query)}`);
+  }
 
-    return (
-        <div className="border-b border-slate-800">
-            <div
-                className={`fixed inset-0 bg-black/60 transition-opacity duration-300 pointer-events-none ${
-                    isSearching ? 'opacity-100 z-40' : 'opacity-0 z-0'
-                }`}
-            />
+  return (
+    <div className="border-b border-slate-800">
+      <div
+        className={`fixed inset-0 bg-black/60 transition-opacity duration-300 pointer-events-none ${
+          isSearching ? 'opacity-100 z-40' : 'opacity-0 z-0'
+        }`}
+      />
 
-            <header className="h-16 border-b border-slate-800 flex items-center justify-between px-8 bg-[#0f172a] backdrop-blur-md relative z-50">
-                <form onSubmit={onSubmit} className={`relative transition-all duration-300 ${
-                    isSearching ? 'flex-1 md:mr-12' : 'w-96'
-                }`}>
-                    <Search className="absolute left-3 top-2.5 text-slate-500" size={18} />
-                    <input
-                        ref={searchRef}
-                        type="text"
-                        value={q}
-                        onChange={(e) => setQ(e.target.value)}
-                        placeholder="Search agents by what you need… (semantic)"
-                        onFocus={() => setIsSearching(true)}
-                        onBlur={() => setIsSearching(false)}
-                        className="w-full bg-slate-900 border border-slate-700 rounded-md py-2 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-white transition-all"
-                    />
-                </form>
+      <header className="h-16 border-b border-slate-800 flex items-center justify-between px-8 bg-[#0f172a] backdrop-blur-md relative z-50">
+        <form
+          onSubmit={onSubmit}
+          className={`relative transition-all duration-300 ${
+            isSearching ? 'flex-1 md:mr-12' : 'w-96'
+          }`}
+        >
+          <Search className="absolute left-3 top-2.5 text-slate-500" size={18} />
+          <input
+            ref={searchRef}
+            type="text"
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            placeholder="Search agents by what you need… (semantic)"
+            onFocus={() => setIsSearching(true)}
+            onBlur={() => setIsSearching(false)}
+            className="w-full bg-slate-900 border border-slate-700 rounded-md py-2 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-white transition-all"
+          />
+        </form>
 
-                <div className="flex items-center gap-4 shrink-0">
-                    <Bell size={20} className="text-slate-400 cursor-pointer hover:text-white transition-colors" />
+        <div className="flex items-center gap-4 shrink-0">
+          {/* ── Notification bell ── */}
+          <NotificationBell />
 
-                    <div className="relative">
-                        <button
-                            onMouseDown={(e) => {
-                                e.preventDefault();
-                                setIsOpen(prev => !prev);
-                            }}
-                            className="flex items-center gap-2 bg-slate-800 hover:bg-slate-700 transition-colors px-3 py-1.5 rounded-full cursor-pointer focus:outline-none select-none"
-                        >
-                        {avatarUrl ? (
-                            <Image src={avatarUrl} alt="Avatar" width={24} height={24} className="rounded-full object-cover" />
-                        ) : (
-                            <div className="flex items-center justify-center w-6 h-6 bg-slate-500 rounded-full">
-                            <User size={14} /> 
-                            </div>
-                        )}
-                        <span className="text-sm font-medium text-white">{userName}</span>
-                        </button>
-
-                        {isOpen && (
-                            <>
-                                <div className="fixed inset-0 z-10" onClick={() => setIsOpen(false)} />
-                                <div className="absolute right-0 mt-2 w-56 rounded-md border border-slate-800 bg-slate-900 p-1 shadow-lg z-20 text-slate-200">
-                                    <div className="px-3 py-2 border-b border-slate-800">
-                                        <p className="text-xs text-slate-500">Signed in as</p>
-                                        <p className="text-sm font-semibold truncate text-white">{userName}</p>
-                                    </div>
-                                    <div className="py-1">
-                                        <button className="w-full flex items-center gap-2 px-3 py-2 text-sm rounded-md hover:bg-slate-800 text-left transition-colors" onClick={() => router.push('/profile')}>
-                                            <User size={16} className="text-slate-400" />
-                                            Profile
-                                        </button>
-                                    </div>
-                                    <div className="border-t border-slate-800 pt-1 mt-1">
-                                        <SignOutButton />
-                                    </div>
-                                </div>
-                            </>
-                        )}
-                    </div>
+          {/* ── User menu ── */}
+          <div className="relative">
+            <button
+              onMouseDown={(e) => {
+                e.preventDefault();
+                setIsOpen((prev) => !prev);
+              }}
+              className="flex items-center gap-2 bg-slate-800 hover:bg-slate-700 transition-colors px-3 py-1.5 rounded-full cursor-pointer focus:outline-none select-none"
+            >
+              {avatarUrl ? (
+                <Image
+                  src={avatarUrl}
+                  alt="Avatar"
+                  width={24}
+                  height={24}
+                  className="rounded-full object-cover"
+                />
+              ) : (
+                <div className="flex items-center justify-center w-6 h-6 bg-slate-500 rounded-full">
+                  <User size={14} />
                 </div>
-            </header>
+              )}
+              <span className="text-sm font-medium text-white">{userName}</span>
+            </button>
+
+            {isOpen && (
+              <>
+                <div className="fixed inset-0 z-10" onClick={() => setIsOpen(false)} />
+                <div className="absolute right-0 mt-2 w-56 rounded-md border border-slate-800 bg-slate-900 p-1 shadow-lg z-20 text-slate-200">
+                  <div className="px-3 py-2 border-b border-slate-800">
+                    <p className="text-xs text-slate-500">Signed in as</p>
+                    <p className="text-sm font-semibold truncate text-white">{userName}</p>
+                  </div>
+                  <div className="py-1">
+                    <button
+                      className="w-full flex items-center gap-2 px-3 py-2 text-sm rounded-md hover:bg-slate-800 text-left transition-colors"
+                      onClick={() => router.push('/profile')}
+                    >
+                      <User size={16} className="text-slate-400" />
+                      Profile
+                    </button>
+                  </div>
+                  <div className="border-t border-slate-800 pt-1 mt-1">
+                    <SignOutButton />
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
         </div>
-    );
+      </header>
+    </div>
+  );
 }
