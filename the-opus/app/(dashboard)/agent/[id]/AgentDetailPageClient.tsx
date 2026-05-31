@@ -1,14 +1,14 @@
 import React from 'react';
 import {
   Star, Zap, Copy, Code2, MessageSquare, ChevronRight, Info, Heart, AlertTriangle, GitBranch,
-  User
+  User, Lock
 } from 'lucide-react';
 import { RunAgent } from '@/components/RunAgent';
 import { LikeButton } from '@/components/LikeButton';
 import { ReviewForm } from '@/components/ReviewForm';
 import Image from 'next/image';
 
-export default function AgentDetailPageClient({ agent, liked }: any) {
+export default function AgentDetailPageClient({ agent, liked, locked = false, restrictedDept = null }: any) {
   const meta = agent.metadata ?? {};
   const author = agent.profiles?.full_name ?? 'Unknown';
   const reviews = agent.reviews ?? [];
@@ -38,6 +38,11 @@ export default function AgentDetailPageClient({ agent, liked }: any) {
             <div className="flex items-center gap-4 text-sm">
               <span className="text-[10px] bg-slate-800 px-2 py-0.5 rounded text-slate-400 border border-slate-700 uppercase">{agent.type}</span>
               <span className="text-slate-400">Author: <span className="text-slate-200">{author}</span></span>
+              {agent.restricted && agent.department && (
+                <span className={`flex items-center gap-1 text-[10px] px-2 py-0.5 rounded border uppercase font-bold ${locked ? 'bg-amber-500/10 text-amber-300 border-amber-500/30' : 'bg-emerald-500/10 text-emerald-300 border-emerald-500/30'}`}>
+                  <Lock size={10} /> {agent.department} only
+                </span>
+              )}
             </div>
           </div>
           <div className="flex gap-3 shrink-0">
@@ -73,21 +78,33 @@ export default function AgentDetailPageClient({ agent, liked }: any) {
           )}
         </div>
 
-        {/* PROMPT + RUN GRID */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          <div className="bg-slate-900 border border-slate-800 rounded-xl p-6">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xs font-bold uppercase tracking-widest text-slate-400">System Prompt / Config</h3>
-              <Copy size={14} className="text-slate-600" />
-            </div>
-            <pre className="font-mono text-xs text-blue-300/80 bg-black/30 p-4 rounded-lg border border-slate-800 max-h-64 overflow-auto whitespace-pre-wrap">
-              {agent.content || '(no content)'}
-            </pre>
+        {/* PROMPT + RUN GRID (or locked state for restricted agents) */}
+        {locked ? (
+          <div className="mb-8 rounded-xl border border-amber-500/30 bg-amber-500/[0.06] p-8 text-center">
+            <Lock size={28} className="mx-auto mb-3 text-amber-400" />
+            <h3 className="text-lg font-bold text-white mb-1">Payload restricted to {restrictedDept}</h3>
+            <p className="mx-auto max-w-md text-sm text-slate-400">
+              This agent is published for the <span className="text-amber-300 font-semibold">{restrictedDept}</span> department.
+              You can see what it does and its trust signals, but the system prompt / file and the
+              ability to run it are limited to {restrictedDept} (and admins).
+            </p>
           </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <div className="bg-slate-900 border border-slate-800 rounded-xl p-6">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-xs font-bold uppercase tracking-widest text-slate-400">System Prompt / Config</h3>
+                <Copy size={14} className="text-slate-600" />
+              </div>
+              <pre className="font-mono text-xs text-blue-300/80 bg-black/30 p-4 rounded-lg border border-slate-800 max-h-64 overflow-auto whitespace-pre-wrap">
+                {agent.content || '(no content)'}
+              </pre>
+            </div>
 
-          {/* REAL one-click Run */}
-          <RunAgent assetId={agent.id} />
-        </div>
+            {/* REAL one-click Run */}
+            <RunAgent assetId={agent.id} />
+          </div>
+        )}
 
         {/* COMMUNITY SECTION */}
         <div className="mt-4">

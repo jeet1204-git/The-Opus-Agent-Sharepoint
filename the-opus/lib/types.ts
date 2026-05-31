@@ -56,6 +56,8 @@ export interface Asset {
   content: string | null;
   file_url: string | null;
   tags: string[];
+  department: string | null;
+  restricted: boolean;
   created_at: string;
   updated_at: string;
 }

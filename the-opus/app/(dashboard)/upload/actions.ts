@@ -43,6 +43,9 @@ export async function createAsset(
     framework: String(formData.get("framework") ?? ""),
   };
   const tags = parseList(formData.get("tags"));
+  const department = String(formData.get("department") ?? "").trim() || null;
+  // Only meaningful when a department is chosen.
+  const restricted = formData.get("restricted") === "on" && !!department;
   const file = formData.get("file") as File | null;
   const hasFile = !!file && file.size > 0;
 
@@ -96,6 +99,8 @@ export async function createAsset(
       content,
       file_url,
       tags,
+      department,
+      restricted,
       embedding,
     })
     .select("id")

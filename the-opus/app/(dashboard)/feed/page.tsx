@@ -1,24 +1,32 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { Trophy, Sparkles, TrendingUp, Heart, Download, Cpu, User } from 'lucide-react';
+import { Trophy, Sparkles, TrendingUp, Heart, Download, Cpu, User, Lock, Globe } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import { requireProfile } from '@/lib/auth';
+import { canUsePayload } from '@/lib/access';
 
 const buildAvatarUrl = (path: string) =>
   `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/avatars/${path}`;
 
-export default async function FeedPage() {
+export default async function FeedPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ scope?: string }>;
+}) {
   const profile = await requireProfile();
+  const { scope } = await searchParams;
+  const openOnly = scope === 'open';
   const supabase = await createClient();
 
   const { data: rows } = await supabase
     .from('assets')
-    .select('id, title, description, tags, metadata, type, created_at, profiles!owner_id(full_name, avatar_url), likes(count), usages(count)')
+    .select('id, title, description, tags, metadata, type, department, restricted, created_at, profiles!owner_id(full_name, avatar_url), likes(count), usages(count)')
     .order('created_at', { ascending: false });
 
   type Row = {
     id: string; title: string; description: string | null; tags: string[] | null;
     metadata: { purpose?: string; framework?: string } | null; type: string;
+    department: string | null; restricted: boolean | null;
     profiles: { full_name: string | null; avatar_url: string | null } | null;
     likes: { count: number }[]; usages: { count: number }[];
   };
@@ -33,10 +41,11 @@ export default async function FeedPage() {
     likes: a.likes?.[0]?.count ?? 0,
     downloads: a.usages?.[0]?.count ?? 0,
     model: a.metadata?.framework || a.type,
+    department: a.department,
+    restricted: !!a.restricted,
+    locked: !canUsePayload({ restricted: a.restricted, department: a.department }, profile),
     featured: false,
   }));
-
-  console.log(agents);
 
   const byLikes = [...agents].sort((x, y) => y.likes - x.likes);
   if (byLikes[0]) byLikes[0].featured = true;
@@ -46,6 +55,7 @@ export default async function FeedPage() {
   agents.forEach((a) => counts.set(a.author, (counts.get(a.author) ?? 0) + 1));
   const leaders = [...counts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 4);
 
+  const visible = openOnly ? agents.filter((a) => !a.restricted) : agents;
   const firstName = (profile.full_name ?? 'there').split(' ')[0];
 
   return (
@@ -65,15 +75,33 @@ export default async function FeedPage() {
             </div>
 
             <h2 className="text-2xl font-bold mb-1 text-white">Welcome, {firstName}!</h2>
-            <p className="text-slate-500 mb-8 text-sm uppercase tracking-widest">Explore all Agents</p>
+            <p className="text-slate-500 mb-6 text-sm uppercase tracking-widest">Explore all Agents</p>
 
-            {agents.length === 0 ? (
+            {/* Scope filter */}
+            <div className="mb-8 inline-flex rounded-lg border border-slate-800 bg-slate-900/40 p-1 text-xs font-bold">
+              <Link
+                href="/feed"
+                className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 transition-colors ${!openOnly ? 'bg-blue-600 text-white' : 'text-slate-400 hover:text-white'}`}
+              >
+                All agents
+              </Link>
+              <Link
+                href="/feed?scope=open"
+                className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 transition-colors ${openOnly ? 'bg-blue-600 text-white' : 'text-slate-400 hover:text-white'}`}
+              >
+                <Globe size={12} /> Available to everyone
+              </Link>
+            </div>
+
+            {visible.length === 0 ? (
               <div className="rounded-xl border border-dashed border-slate-700 p-10 text-center text-slate-500">
-                No agents yet. <Link href="/upload" className="text-blue-400">Publish the first one →</Link>
+                {openOnly
+                  ? 'No org-wide agents yet — switch to “All agents”.'
+                  : <>No agents yet. <Link href="/upload" className="text-blue-400">Publish the first one →</Link></>}
               </div>
             ) : (
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {agents.map((agent) => (
+                {visible.map((agent) => (
                   <AgentCard key={agent.id} {...agent} />
                 ))}
               </div>
@@ -106,7 +134,7 @@ const TrendingCard = ({ agent, rank }: any) => (
   </Link>
 );
 
-const AgentCard = ({ id, name, author, avatarUrl, tags, description, likes, downloads, model, featured }: any) => (
+const AgentCard = ({ id, name, author, avatarUrl, tags, description, likes, downloads, model, featured, restricted, department, locked }: any) => (
   <Link href={`/agent/${id}`} className={`p-6 rounded-xl border transition-all hover:border-slate-600 group flex flex-col ${
     featured
       ? 'bg-blue-900/10 border-blue-500/50 ring-1 ring-blue-500/50'
@@ -127,9 +155,16 @@ const AgentCard = ({ id, name, author, avatarUrl, tags, description, likes, down
           <p className="text-xs text-slate-400 truncate">by {author}</p>
         </div>
       </div>
-      <div className="flex items-center gap-1.5 px-2 py-1 bg-slate-950 border border-slate-800 rounded text-[10px] font-mono text-blue-400 whitespace-nowrap">
-        <Cpu size={12} />
-        {model}
+      <div className="flex items-center gap-1.5 shrink-0">
+        {restricted && department && (
+          <span className={`flex items-center gap-1 px-2 py-1 rounded text-[10px] font-bold whitespace-nowrap border ${locked ? 'bg-amber-500/10 text-amber-300 border-amber-500/30' : 'bg-emerald-500/10 text-emerald-300 border-emerald-500/30'}`}>
+            <Lock size={11} /> {department}
+          </span>
+        )}
+        <div className="flex items-center gap-1.5 px-2 py-1 bg-slate-950 border border-slate-800 rounded text-[10px] font-mono text-blue-400 whitespace-nowrap">
+          <Cpu size={12} />
+          {model}
+        </div>
       </div>
     </div>
 

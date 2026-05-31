@@ -61,6 +61,8 @@ create table if not exists public.assets (
   content         text,                 -- the actual prompt / config text
   file_url        text,                 -- optional uploaded file (storage)
   tags            text[] not null default '{}',
+  department      text,                 -- optional: scope this agent to a department
+  restricted      boolean not null default false, -- if true, payload limited to department + admins
   embedding       vector(768),          -- OpenRouter text-embedding-3-small
   created_at      timestamptz not null default now(),
   updated_at      timestamptz not null default now()
