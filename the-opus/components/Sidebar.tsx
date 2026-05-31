@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutGrid, Users, BookOpen, UploadCloud, Shield } from 'lucide-react';
+import { LayoutGrid, Users, BookOpen, UploadCloud, Shield, TrendingUp } from 'lucide-react';
 import { SignOutButton } from '@/components/SignOutButton';
 import Image from 'next/image';
 
@@ -49,6 +49,7 @@ export const Sidebar = ({ isAdmin = false }: { isAdmin?: boolean }) => {
         <NavItem icon={<LayoutGrid size={20}/>} label="Home/Feed" href="/feed" />
         <NavItem icon={<UploadCloud size={20}/>} label="Publish" href="/upload" />
         <NavItem icon={<Users size={20}/>} label="My Agents" href="/my-agents" />
+        <NavItem icon={<TrendingUp size={20}/>} label="Reuse Impact" href="/impact" />
 
         <div className="pt-4 pb-2 px-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">
           Manage
