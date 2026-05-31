@@ -27,7 +27,7 @@ export function LikeButton({
     return (
       <div
         title="Endorsing is limited to this agent's department"
-        className="flex items-center gap-2 px-4 py-2 rounded border font-bold bg-slate-900 border-slate-800 text-slate-500 cursor-not-allowed"
+        className="flex items-center gap-2 px-4 py-2 rounded border font-bold bg-white border-slate-200 text-slate-400 cursor-not-allowed"
       >
         <Heart size={16} fill="none" />
         {initialCount}
@@ -51,8 +51,8 @@ export function LikeButton({
       disabled={pending}
       className={`flex items-center gap-2 px-4 py-2 rounded border font-bold transition-all ${
         liked
-          ? "bg-pink-600/20 border-pink-500/50 text-pink-400"
-          : "bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-700"
+          ? "bg-pink-50 border-pink-200 text-pink-600"
+          : "bg-white border-slate-200 text-slate-700 hover:bg-slate-100"
       }`}
     >
       <Heart size={16} fill={liked ? "currentColor" : "none"} />

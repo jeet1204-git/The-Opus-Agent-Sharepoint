@@ -65,11 +65,11 @@ export default async function ImpactPage() {
   const maxWeek = Math.max(1, ...buckets);
 
   return (
-    <div className="flex-1 overflow-y-auto bg-[#0b1120]">
-      <header className="h-16 border-b border-slate-800 flex items-center gap-3 px-8 bg-[#0f172a]/50 backdrop-blur-md">
-        <TrendingUp size={20} className="text-blue-500" />
-        <h1 className="text-lg font-bold text-white">Reuse Impact</h1>
-        <span className="ml-2 rounded-full bg-blue-500/10 px-2 py-0.5 text-xs font-medium text-blue-300">
+    <div className="flex-1 overflow-y-auto">
+      <header className="h-16 border-b border-slate-200 flex items-center gap-3 px-8 bg-white/60 backdrop-blur-md">
+        <TrendingUp size={20} className="text-[#7c5cff]" />
+        <h1 className="text-lg font-bold text-[#15161a]" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>Reuse Impact</h1>
+        <span className="ml-2 rounded-full bg-[#7c5cff]/10 px-2 py-0.5 text-xs font-medium text-[#7c5cff]">
           Acme Corp · this quarter
         </span>
       </header>
@@ -78,23 +78,23 @@ export default async function ImpactPage() {
         {/* The mic-drop line */}
         <div>
           <p className="text-sm uppercase tracking-widest text-slate-500 mb-2">The bottom line</p>
-          <h2 className="text-3xl md:text-4xl font-bold text-white leading-tight max-w-4xl">
+          <h2 className="text-3xl md:text-4xl font-bold text-[#15161a] leading-tight max-w-4xl" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
             The Opus has saved Acme{" "}
-            <span className="text-blue-400">{hoursSaved.toLocaleString()} engineering hours</span> —
-            about <span className="text-emerald-400">{eur(moneySaved)}</span> — by reusing agents
+            <span className="text-[#7c5cff]">{hoursSaved.toLocaleString()} engineering hours</span> —
+            about <span className="text-[#0fae8e]">{eur(moneySaved)}</span> — by reusing agents
             instead of rebuilding them.
           </h2>
         </div>
 
         {/* Hero stat cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          <StatCard icon={<Clock size={18} />} accent="text-blue-400"
+          <StatCard icon={<Clock size={18} />} accent="text-[#7c5cff]"
             label="Engineering hours saved" value={hoursSaved.toLocaleString()}
             sub={`${adoptions} rebuilds avoided × ${HOURS_PER_REBUILD}h each`} />
-          <StatCard icon={<Euro size={18} />} accent="text-emerald-400"
+          <StatCard icon={<Euro size={18} />} accent="text-[#0fae8e]"
             label="Cost avoided" value={eur(moneySaved)}
             sub={`at ${eur(BLENDED_RATE)}/engineering hour`} />
-          <StatCard icon={<Repeat size={18} />} accent="text-amber-400"
+          <StatCard icon={<Repeat size={18} />} accent="text-[#e0922a]"
             label="Rebuilds avoided" value={adoptions.toLocaleString()}
             sub={`${activeMembers} teammates reused existing agents`} />
         </div>
@@ -109,7 +109,7 @@ export default async function ImpactPage() {
 
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
           {/* Weekly trend */}
-          <section className="xl:col-span-1 rounded-xl border border-slate-800 bg-slate-900/40 p-6">
+          <section className="xl:col-span-1 rounded-xl border border-slate-200 bg-white shadow-sm p-6">
             <h3 className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-6">
               Reuse over the last {WEEKS} weeks
             </h3>
@@ -117,11 +117,11 @@ export default async function ImpactPage() {
               {buckets.map((c, i) => (
                 <div key={i} className="flex-1 flex flex-col items-center gap-2">
                   <div
-                    className="w-full rounded-t bg-gradient-to-t from-blue-600/40 to-blue-500 transition-all"
+                    className="w-full rounded-t bg-gradient-to-t from-[#7c5cff]/40 to-[#2ed3b7] transition-all"
                     style={{ height: `${Math.max(4, (c / maxWeek) * 100)}%` }}
                     title={`${c} reuse events`}
                   />
-                  <span className="text-[10px] text-slate-600">
+                  <span className="text-[10px] text-slate-400">
                     {i === WEEKS - 1 ? "now" : `-${WEEKS - 1 - i}w`}
                   </span>
                 </div>
@@ -133,12 +133,12 @@ export default async function ImpactPage() {
           </section>
 
           {/* Most-reused agents */}
-          <section className="xl:col-span-2 rounded-xl border border-slate-800 bg-slate-900/40 p-6">
+          <section className="xl:col-span-2 rounded-xl border border-slate-200 bg-white shadow-sm p-6">
             <h3 className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-4">
               Most-reused agents
             </h3>
             <div className="space-y-1">
-              <div className="grid grid-cols-12 px-3 pb-2 text-[10px] uppercase tracking-wider text-slate-600">
+              <div className="grid grid-cols-12 px-3 pb-2 text-[10px] uppercase tracking-wider text-slate-400">
                 <span className="col-span-5">Agent</span>
                 <span className="col-span-2 text-right">Reuses</span>
                 <span className="col-span-2 text-right">Adopters</span>
@@ -147,12 +147,12 @@ export default async function ImpactPage() {
               </div>
               {byAsset.map((a) => (
                 <Link key={a.id} href={`/agent/${a.id}`}
-                  className="grid grid-cols-12 items-center rounded-lg px-3 py-2.5 hover:bg-slate-800/50 transition-colors group">
-                  <span className="col-span-5 truncate font-medium text-slate-200 group-hover:text-white">{a.title}</span>
-                  <span className="col-span-2 text-right font-mono text-slate-300">{a.events}</span>
-                  <span className="col-span-2 text-right font-mono text-slate-400">{a.adopt}</span>
-                  <span className="col-span-2 text-right font-mono text-blue-400">{a.hours}h</span>
-                  <span className="col-span-1 text-right font-mono text-amber-400">{a.avg ? a.avg.toFixed(1) : "—"}</span>
+                  className="grid grid-cols-12 items-center rounded-lg px-3 py-2.5 hover:bg-slate-100 transition-colors group">
+                  <span className="col-span-5 truncate font-medium text-slate-700 group-hover:text-[#15161a]">{a.title}</span>
+                  <span className="col-span-2 text-right font-mono text-slate-700">{a.events}</span>
+                  <span className="col-span-2 text-right font-mono text-slate-500">{a.adopt}</span>
+                  <span className="col-span-2 text-right font-mono text-[#7c5cff]">{a.hours}h</span>
+                  <span className="col-span-1 text-right font-mono text-[#e0922a]">{a.avg ? a.avg.toFixed(1) : "—"}</span>
                 </Link>
               ))}
             </div>
@@ -160,7 +160,7 @@ export default async function ImpactPage() {
         </div>
 
         {/* Honest methodology */}
-        <p className="max-w-4xl text-xs leading-relaxed text-slate-600 border-t border-slate-800/60 pt-4">
+        <p className="max-w-4xl text-xs leading-relaxed text-slate-400 border-t border-slate-200 pt-4">
           <span className="font-semibold text-slate-500">How this is calculated:</span> a “rebuild avoided” is a
           distinct (teammate × agent) adoption — someone running or downloading an agent that already existed
           instead of building their own. Each is priced at a conservative {HOURS_PER_REBUILD} engineering hours
@@ -175,12 +175,12 @@ function StatCard({ icon, accent, label, value, sub }: {
   icon: React.ReactNode; accent: string; label: string; value: string; sub: string;
 }) {
   return (
-    <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-6">
+    <div className="rounded-xl border border-slate-200 bg-white shadow-sm p-6">
       <div className={`flex items-center gap-2 ${accent} mb-3`}>
         {icon}
-        <span className="text-xs font-medium uppercase tracking-wider text-slate-400">{label}</span>
+        <span className="text-xs font-medium uppercase tracking-wider text-slate-500">{label}</span>
       </div>
-      <p className="text-4xl font-bold text-white tracking-tight">{value}</p>
+      <p className="text-4xl font-bold text-[#15161a] tracking-tight" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>{value}</p>
       <p className="mt-2 text-xs text-slate-500">{sub}</p>
     </div>
   );
@@ -188,12 +188,12 @@ function StatCard({ icon, accent, label, value, sub }: {
 
 function MiniStat({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
   return (
-    <div className="rounded-lg border border-slate-800 bg-slate-900/30 px-4 py-3">
+    <div className="rounded-lg border border-slate-200 bg-white shadow-sm px-4 py-3">
       <div className="flex items-center gap-1.5 text-slate-500 mb-1">
         {icon}
         <span className="text-[10px] uppercase tracking-wider">{label}</span>
       </div>
-      <p className="text-xl font-bold text-white">{value}</p>
+      <p className="text-xl font-bold text-[#15161a]">{value}</p>
     </div>
   );
 }
