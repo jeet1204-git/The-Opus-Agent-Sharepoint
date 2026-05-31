@@ -36,12 +36,12 @@ export const Sidebar = ({ isAdmin = false }: { isAdmin?: boolean }) => {
   return (
     <aside className="w-64 border-r border-slate-800 flex flex-col p-4 bg-[#0f172a]">
       {/* Branding */}
-      <div className="flex items-center gap-2 px-2 py-4 mb-4">
+      <a href="/" className="flex items-center gap-2 px-2 py-4 mb-4">
         <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center shadow-lg shadow-blue-900/20">
           <Image src="/logos/the-opus-logo-symbol.svg" alt="The OPUS Logo" className="w-16 h-16" width={64} height={64} />
         </div>
         <h1 className="font-bold text-lg tracking-tight text-white">The OPUS</h1>
-      </div>
+      </a>
 
       {/* Navigation */}
       <nav className="flex-1 space-y-1">
