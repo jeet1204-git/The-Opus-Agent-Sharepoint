@@ -15,8 +15,7 @@ export default async function AgentDetailPage({
   const { data: asset } = await supabase
     .from("assets")
     .select(
-      "*, profiles!owner_id(full_name), reviews(id, rating, comment, created_at, profiles!user_id(full_name)), versions(id, version_label, changelog, created_at), likes(count), usages(count)"
-    )
+      "*, profiles!owner_id(full_name), reviews(id, rating, comment, created_at, profiles!user_id(full_name, avatar_url)), versions(id, version_label, changelog, created_at), likes(count), usages(count)"    )
     .eq("id", id)
     .single();
 

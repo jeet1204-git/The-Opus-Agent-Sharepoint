@@ -4,8 +4,9 @@ import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { Search, Bell, User } from 'lucide-react';
 import { SignOutButton } from './SignOutButton';
+import Image from 'next/image';
 
-export default function Header({ userName = 'User' }: { userName?: string }) {
+export default function Header({ userName = 'User', avatarUrl }: { userName?: string; avatarUrl?: string | null }) {
     const [isOpen, setIsOpen] = useState(false);
     const [isSearching, setIsSearching] = useState(false);
     const [q, setQ] = useState('');
@@ -54,8 +55,14 @@ export default function Header({ userName = 'User' }: { userName?: string }) {
                             }}
                             className="flex items-center gap-2 bg-slate-800 hover:bg-slate-700 transition-colors px-3 py-1.5 rounded-full cursor-pointer focus:outline-none select-none"
                         >
-                            <div className="w-6 h-6 bg-slate-500 rounded-full" />
-                            <span className="text-sm font-medium text-white">{userName}</span>
+                        {avatarUrl ? (
+                            <Image src={avatarUrl} alt="Avatar" width={24} height={24} className="rounded-full object-cover" />
+                        ) : (
+                            <div className="flex items-center justify-center w-6 h-6 bg-slate-500 rounded-full">
+                            <User size={14} /> 
+                            </div>
+                        )}
+                        <span className="text-sm font-medium text-white">{userName}</span>
                         </button>
 
                         {isOpen && (

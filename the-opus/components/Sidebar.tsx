@@ -57,7 +57,7 @@ export const Sidebar = ({ isAdmin = false }: { isAdmin?: boolean }) => {
         {isAdmin && (
           <NavItem icon={<Shield size={20}/>} label="Admin" href="/admin" />
         )}
-        <NavItem icon={<BookOpen size={20}/>} label="Documentation" href="/documentation" />
+        <NavItem icon={<BookOpen size={20}/>} label="FAQs" href="/documentation" />
       </nav>
 
       {/* Sign out pinned to bottom */}
