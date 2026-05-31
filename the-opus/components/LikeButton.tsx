@@ -9,15 +9,31 @@ export function LikeButton({
   assetId,
   initialLiked,
   initialCount,
+  locked = false,
 }: {
   assetId: string;
   initialLiked: boolean;
   initialCount: number;
+  locked?: boolean;
 }) {
   const router = useRouter();
   const [liked, setLiked] = useState(initialLiked);
   const [count, setCount] = useState(initialCount);
   const [pending, start] = useTransition();
+
+  // Restricted agents: other departments can see the endorsement count (trust
+  // signal) but cannot endorse — show a static, non-interactive badge.
+  if (locked) {
+    return (
+      <div
+        title="Endorsing is limited to this agent's department"
+        className="flex items-center gap-2 px-4 py-2 rounded border font-bold bg-slate-900 border-slate-800 text-slate-500 cursor-not-allowed"
+      >
+        <Heart size={16} fill="none" />
+        {initialCount}
+      </div>
+    );
+  }
 
   function onClick() {
     // optimistic

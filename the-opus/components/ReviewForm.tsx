@@ -2,14 +2,32 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Star, Send } from "lucide-react";
+import { Star, Send, Lock } from "lucide-react";
 import { addReview } from "@/app/(dashboard)/agent/[id]/actions";
 
-export function ReviewForm({ assetId }: { assetId: string }) {
+export function ReviewForm({
+  assetId,
+  locked = false,
+  department = null,
+}: {
+  assetId: string;
+  locked?: boolean;
+  department?: string | null;
+}) {
   const router = useRouter();
   const [rating, setRating] = useState(5);
   const [comment, setComment] = useState("");
   const [pending, start] = useTransition();
+
+  // Restricted agents: only the owning department (and admins) can review.
+  if (locked) {
+    return (
+      <div className="flex items-center gap-2 rounded-xl border border-slate-800 bg-slate-900/50 px-4 py-3 text-sm text-slate-500">
+        <Lock size={14} className="shrink-0 text-slate-600" />
+        Reviewing is limited to the {department ?? "owning"} department.
+      </div>
+    );
+  }
 
   function submit() {
     if (!comment.trim()) return;

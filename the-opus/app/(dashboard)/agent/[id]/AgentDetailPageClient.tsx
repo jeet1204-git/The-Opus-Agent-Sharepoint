@@ -46,7 +46,7 @@ export default function AgentDetailPageClient({ agent, liked, locked = false, re
             </div>
           </div>
           <div className="flex gap-3 shrink-0">
-            <LikeButton assetId={agent.id} initialLiked={liked} initialCount={likeCount} />
+            <LikeButton assetId={agent.id} initialLiked={liked} initialCount={likeCount} locked={locked} />
             <div className="flex items-center gap-1.5 px-3 py-2 bg-slate-950 border border-slate-800 rounded text-xs font-mono text-blue-400">
               {meta.framework || 'raw'}
             </div>
@@ -112,7 +112,7 @@ export default function AgentDetailPageClient({ agent, liked, locked = false, re
             <MessageSquare size={16} /> Reviews & Endorsements ({reviewCount})
           </h3>
           <div className="mb-6">
-            <ReviewForm assetId={agent.id} />
+            <ReviewForm assetId={agent.id} locked={locked} department={restrictedDept} />
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {reviews.length === 0 && (
