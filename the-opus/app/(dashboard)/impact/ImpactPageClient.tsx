@@ -22,8 +22,8 @@ import {
 const MIT_MULTIPLIER = 0.37;    // 37% average task speed-up via generative assistance
 const LLM_COST_PER_HOUR = 1.50; // Static hardware/token overhead deduction
 const WEEKS_PER_YEAR = 46;      // Net working weeks (factoring out corporate holidays)
-const HIST_HOURS = 124.5;       // Historical creation hours saved
-const DAYS_SINCE_INCEPTION = 60;
+
+
 
 // ── FORMULA TOOLTIP ──────────────────────────────────────────────────────────
 function FormulaTooltip({ children }: { children: React.ReactNode }) {
@@ -121,8 +121,14 @@ function ChartTooltip({ active, payload, label, eur }: any) {
 // ── MAIN COMPONENT ───────────────────────────────────────────────────────────
 export default function ImpactPageClient({
   initialEmployeeCount,
+  estimatedHoursSaved,
+  earliestCreatedAt,
+  latestUpdatedAt,
 }: {
   initialEmployeeCount: number;
+  estimatedHoursSaved: number;
+  earliestCreatedAt: string | null;
+  latestUpdatedAt: string | null;
 }) {
   const [hourlyRate, setHourlyRate] = useState(55);
   const [utilizationRate, setUtilizationRate] = useState(0.2);
@@ -135,37 +141,53 @@ export default function ImpactPageClient({
       maximumFractionDigits: 0,
     }).format(n);
 
-  const { historicalMoneySaved, annualExecutionNet, annCreationBase, chartData } =
+  const { historicalMoneySaved, annualExecutionNet, daysSinceInception, chartData } =
     useMemo(() => {
-      // A. Creation savings
-      const histMoney = HIST_HOURS * hourlyRate;
-      const annCreation = (histMoney / DAYS_SINCE_INCEPTION) * 365;
+      // ── Time span ──────────────────────────────────────────────────────────
+      const start = earliestCreatedAt ? new Date(earliestCreatedAt).getTime() : null;
+      const end   = latestUpdatedAt   ? new Date(latestUpdatedAt).getTime()   : null;
+      const days  = start && end ? Math.max(1, (end - start) / 86_400_000) : 30;
 
-      // B. Net execution savings
+      // ── A. Creation savings (historical, to-date) ──────────────────────────
+      // estimatedHoursSaved = AI-scored hours across all assets (length + complexity + specificity) × 0.5
+      const histMoney = estimatedHoursSaved * hourlyRate;
+
+      // Daily asset creation rate: how many €-worth of work per day since inception
+      const dailyCreationRate = histMoney / days; // €/day
+      const annualCreationRate = dailyCreationRate * 365; // €/year at current pace
+
+      // ── B. Net execution savings ───────────────────────────────────────────
       const netValuePerHour = hourlyRate - LLM_COST_PER_HOUR;
       const weeklyHoursSaved = utilizationRate * trackingWindow;
       const annualExecHours =
         weeklyHoursSaved * WEEKS_PER_YEAR * initialEmployeeCount * MIT_MULTIPLIER;
       const annExecNet = annualExecHours * netValuePerHour;
 
-      // Chart data — 10 year projection
+      // ── Chart: 10-year projection ──────────────────────────────────────────
+      // Type A grows as a compounding curve: each year the org adds more assets,
+      // so savings compound at the same daily rate observed so far.
+      // Cumulative Type A at year Y = annualCreationRate × Y × (Y+1)/2
+      //   (triangular sum — year 1 adds 1×, year 2 adds 2×, etc.)
+      // This produces a curve that accelerates, not a flat line.
       const data = Array.from({ length: 10 }, (_, i) => {
         const y = i + 1;
+        const cumulativeA = Math.round(annualCreationRate * (y * (y + 1)) / 2);
+        const cumulativeB = Math.round(annExecNet * y);
         return {
           year: `Year ${y}`,
-          "Type A — Creation": Math.round(annCreation * y),
-          "Type B — Execution": Math.round(annExecNet * y),
-          Combined: Math.round((annCreation + annExecNet) * y),
+          "Type A — Creation": cumulativeA,
+          "Type B — Execution": cumulativeB,
+          Combined: cumulativeA + cumulativeB,
         };
       });
 
       return {
         historicalMoneySaved: histMoney,
         annualExecutionNet: annExecNet,
-        annCreationBase: annCreation,
+        daysSinceInception: days,
         chartData: data,
       };
-    }, [hourlyRate, utilizationRate, trackingWindow]);
+    }, [hourlyRate, utilizationRate, trackingWindow, estimatedHoursSaved, earliestCreatedAt, latestUpdatedAt]);
 
   const total10yr =
     chartData[9]["Type A — Creation"] + chartData[9]["Type B — Execution"];
@@ -204,18 +226,27 @@ export default function ImpactPageClient({
             </div>
             <p className="text-3xl font-extrabold text-white">{eur(historicalMoneySaved)}</p>
             <p className="text-xs text-slate-400 leading-relaxed">
-              Reclaimed development costs to date. Engineers reuse pre-existing verified
-              wrappers instead of recreating similar LLM contexts from scratch.
+              Reclaimed development costs to date across{" "}
+              <span className="text-slate-300">{Math.round(daysSinceInception)} days</span> of asset
+              creation. Engineers reuse pre-existing verified wrappers instead of
+              recreating similar LLM contexts from scratch.
             </p>
             <FormulaTooltip>
               <p className="font-bold text-white mb-2">Creation savings formula</p>
               <code className="block bg-slate-900 rounded px-2 py-1 mb-2 text-blue-300">
-                historical_hours × hourly_rate
+                estimated_hours × hourly_rate
               </code>
-              <p className="text-slate-400">
-                {HIST_HOURS} recorded hrs × your rate. Annualised:{" "}
-                <code className="text-blue-300">(result ÷ {DAYS_SINCE_INCEPTION} days) × 365</code>
+              <p className="text-slate-400 mb-2">
+                Each asset is scored by AI on three dimensions (0–1 each):
               </p>
+              <ul className="text-slate-400 space-y-0.5">
+                <li><span className="text-slate-300">length</span> — how detailed the content is</li>
+                <li><span className="text-slate-300">complexity</span> — branching logic, multi-step reasoning</li>
+                <li><span className="text-slate-300">specificity</span> — domain-specific vs generic</li>
+              </ul>
+              <code className="block bg-slate-900 rounded px-2 py-1 mt-2 text-blue-300">
+                hours = (length + complexity + specificity) × 0.5
+              </code>
             </FormulaTooltip>
           </div>
 
@@ -253,12 +284,16 @@ export default function ImpactPageClient({
             <FormulaTooltip>
               <p className="font-bold text-white mb-2">Projection formula</p>
               <code className="block bg-slate-900 rounded px-2 py-1 mb-2 text-amber-300">
-                Combined(Y) = (Type B × Y) + (Type A annualised × Y)
+                TypeA(Y) = annualRate × Y×(Y+1)/2
               </code>
-              <p className="text-slate-400">
-                Linear compounding of both savings streams. Both series share the same
-                starting base and grow proportionally with your slider inputs.
+              <p className="text-slate-400 mb-2">
+                Type A accelerates — each year the org adds more assets at the same daily rate
+                observed so far (<span className="text-slate-300">{Math.round(daysSinceInception)} days</span> of data).
+                The triangular sum <code className="text-amber-300">Y×(Y+1)/2</code> produces a curve, not a flat line.
               </p>
+              <code className="block bg-slate-900 rounded px-2 py-1 text-blue-300">
+                TypeB(Y) = annualExec × Y  (linear)
+              </code>
             </FormulaTooltip>
           </div>
 
@@ -305,7 +340,7 @@ export default function ImpactPageClient({
               <Area
                 type="monotone"
                 dataKey="Type B — Execution"
-                stroke="#3b82f6"
+                stroke="#10b981"
                 strokeWidth={2}
                 fill="url(#gradB)"
                 dot={false}
@@ -314,7 +349,7 @@ export default function ImpactPageClient({
               <Area
                 type="monotone"
                 dataKey="Type A — Creation"
-                stroke="#10b981"
+                stroke="#3b82f6"
                 strokeWidth={1.5}
                 strokeDasharray="5 3"
                 fill="url(#gradA)"
