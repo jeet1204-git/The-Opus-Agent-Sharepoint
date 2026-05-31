@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Sparkles, Search, Loader2, CheckCircle2, ArrowRight, Heart, Play, Star, Wand2 } from "lucide-react";
 import { aiSearch, type AiSearchResult } from "@/lib/search";
+import { reportSearchGap } from "@/app/(dashboard)/search/actions";
 import type { SearchMatch } from "@/lib/types";
 
 const STEPS = ["Reading your request…", "Searching the registry…", "Asking the assistant…"];
@@ -14,19 +15,27 @@ function relLabel(s: number): { text: string; cls: string } {
   return { text: "Loosely related", cls: "bg-slate-700/60 text-slate-400" };
 }
 
+function isLowConfidenceResult(results: SearchMatch[], verdict: string | undefined): boolean {
+  if (verdict === "none") return true;
+  const topSimilarity = results[0]?.similarity ?? null;
+  if (topSimilarity === null) return true;
+  return topSimilarity < 0.22;
+}
+
 export default function SearchExperience({ query }: { query: string }) {
   const [data, setData] = useState<AiSearchResult | null>(null);
   const [step, setStep] = useState(0);
   const [loading, setLoading] = useState(true);
   const stepTimer = useRef<ReturnType<typeof setInterval> | null>(null);
+  const gapReported = useRef(false);
 
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
     setData(null);
     setStep(0);
+    gapReported.current = false;
 
-    // Advance the "thinking" steps while the real work runs.
     stepTimer.current = setInterval(() => {
       setStep((s) => Math.min(s + 1, STEPS.length - 1));
     }, 750);
@@ -34,11 +43,19 @@ export default function SearchExperience({ query }: { query: string }) {
     aiSearch(query)
       .then((res) => {
         if (cancelled) return;
-        // Let the final "Asking the assistant…" step breathe for a beat.
         setTimeout(() => {
           if (cancelled) return;
           setData(res);
           setLoading(false);
+
+          // Report gap if results are low-confidence and not already reported
+          if (!gapReported.current && isLowConfidenceResult(res.results, res.ai?.verdict)) {
+            gapReported.current = true;
+            const topSimilarity = res.results[0]?.similarity ?? null;
+            reportSearchGap(query, res.ai?.verdict ?? "none", topSimilarity).catch(() => {
+              // Fire-and-forget; silently ignore errors
+            });
+          }
         }, 250);
       })
       .catch(() => {
@@ -96,6 +113,20 @@ export default function SearchExperience({ query }: { query: string }) {
       {/* The confident answer card */}
       {!loading && ai && (
         <AnswerCard ai={ai} best={results.find((r) => r.id === ai.bestId) ?? null} />
+      )}
+
+      {/* Low-confidence nudge */}
+      {!loading && isLowConfidenceResult(results, ai?.verdict) && (
+        <div className="mb-8 rounded-xl border border-amber-500/30 bg-amber-500/[0.06] px-5 py-4 flex items-start gap-3">
+          <Search size={16} className="text-amber-400 mt-0.5 shrink-0" />
+          <p className="text-sm text-amber-200/80">
+            We couldn&apos;t find a strong match for this. We&apos;ve noted the gap — try rephrasing, or{" "}
+            <Link href="/agent/new" className="underline underline-offset-2 text-amber-300 hover:text-amber-200">
+              create this agent
+            </Link>
+            .
+          </p>
+        </div>
       )}
 
       {/* Ranked list */}
