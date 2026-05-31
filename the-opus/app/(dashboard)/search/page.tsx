@@ -17,7 +17,7 @@ export default async function SearchPage({
         {query ? (
           <SearchExperience query={query} />
         ) : (
-          <div className="max-w-5xl">
+          <div>
             <h3 className="flex items-center gap-2 text-xs font-bold mb-2 uppercase tracking-[0.2em] text-slate-500">
               <Sparkles size={14} className="text-blue-400" /> AI Search
             </h3>

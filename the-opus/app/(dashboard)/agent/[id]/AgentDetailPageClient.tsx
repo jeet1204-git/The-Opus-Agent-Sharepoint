@@ -1,10 +1,12 @@
 import React from 'react';
 import {
-  Star, Zap, Copy, Code2, MessageSquare, ChevronRight, Info, Heart, AlertTriangle, GitBranch
+  Star, Zap, Copy, Code2, MessageSquare, ChevronRight, Info, Heart, AlertTriangle, GitBranch,
+  User
 } from 'lucide-react';
 import { RunAgent } from '@/components/RunAgent';
 import { LikeButton } from '@/components/LikeButton';
 import { ReviewForm } from '@/components/ReviewForm';
+import Image from 'next/image';
 
 export default function AgentDetailPageClient({ agent, liked }: any) {
   const meta = agent.metadata ?? {};
@@ -106,6 +108,10 @@ export default function AgentDetailPageClient({ agent, liked }: any) {
                 date={new Date(r.created_at).toLocaleDateString()}
                 rating={r.rating}
                 content={r.comment ?? ''}
+                avatarUrl={r.profiles?.avatar_url
+                  ? `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/avatars/${r.profiles.avatar_url}`
+                  : null
+                }
               />
             ))}
           </div>
@@ -194,11 +200,18 @@ const Step = ({ title, code }: { title: string; code: string }) => (
   </div>
 );
 
-const ReviewCard = ({ name, date, content, rating }: any) => (
+const ReviewCard = ({ name, date, content, rating, avatarUrl }: any) => (
   <div className="bg-slate-900/50 border border-slate-800 p-4 rounded-xl">
     <div className="flex justify-between items-start mb-3">
       <div className="flex items-center gap-2">
-        <div className="w-8 h-8 bg-slate-700 rounded-full" />
+        <div className="relative w-8 h-8 shrink-0 rounded-full border border-slate-600 overflow-hidden bg-slate-700">
+          {avatarUrl
+            ? <Image src={avatarUrl} alt={name} fill className="object-cover" />
+            : <div className="w-full h-full flex items-center justify-center">
+              <User size={14} className="text-slate-400" />
+            </div>
+          }
+        </div>
         <div>
           <p className="text-sm font-bold text-slate-200 leading-none">{name}</p>
           <p className="text-[10px] text-slate-500 mt-1">{date}</p>

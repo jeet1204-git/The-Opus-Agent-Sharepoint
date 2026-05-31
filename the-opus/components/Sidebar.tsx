@@ -3,8 +3,9 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutGrid, Users, Settings, BookOpen, UploadCloud, Shield, TrendingUp } from 'lucide-react';
+import { LayoutGrid, Users, BookOpen, UploadCloud, Shield, TrendingUp } from 'lucide-react';
 import { SignOutButton } from '@/components/SignOutButton';
+import Image from 'next/image';
 
 interface NavItemProps {
   icon: React.ReactNode;
@@ -37,8 +38,8 @@ export const Sidebar = ({ isAdmin = false }: { isAdmin?: boolean }) => {
     <aside className="w-64 border-r border-slate-800 flex flex-col p-4 bg-[#0f172a]">
       {/* Branding */}
       <div className="flex items-center gap-2 px-2 py-4 mb-4">
-        <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center shadow-lg shadow-blue-900/20">
-          <span className="font-bold text-white">O</span>
+        <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center shadow-lg shadow-blue-900/20">
+            <Image src="/logos/the-opus-logo-symbol.svg" alt="The OPUS Logo" className="w-16 h-16" width={64} height={64} />
         </div>
         <h1 className="font-bold text-lg tracking-tight text-white">The OPUS</h1>
       </div>
@@ -57,8 +58,7 @@ export const Sidebar = ({ isAdmin = false }: { isAdmin?: boolean }) => {
         {isAdmin && (
           <NavItem icon={<Shield size={20}/>} label="Admin" href="/admin" />
         )}
-        <NavItem icon={<Settings size={20}/>} label="Settings" href="/settings" />
-        <NavItem icon={<BookOpen size={20}/>} label="Documentation" href="/documentation" />
+        <NavItem icon={<BookOpen size={20}/>} label="FAQs" href="/documentation" />
       </nav>
 
       {/* Sign out pinned to bottom */}

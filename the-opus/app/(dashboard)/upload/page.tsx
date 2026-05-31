@@ -123,7 +123,7 @@ export default function UploadPage() {
           </div>
         )}
 
-        <form action={formAction} className="max-w-3xl space-y-6">
+        <form action={formAction} className="space-y-6">
           {state.message && (
             <div className="rounded-md border border-red-500/30 bg-red-500/10 px-3 py-2 text-sm text-red-400">
               {state.message}
