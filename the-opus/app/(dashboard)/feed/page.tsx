@@ -1,7 +1,11 @@
 import Link from 'next/link';
-import { Trophy, Sparkles, TrendingUp, Heart, Download, Cpu } from 'lucide-react';
+import Image from 'next/image';
+import { Trophy, Sparkles, TrendingUp, Heart, Download, Cpu, User } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import { requireProfile } from '@/lib/auth';
+
+const buildAvatarUrl = (path: string) =>
+  `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/avatars/${path}`;
 
 export default async function FeedPage() {
   const profile = await requireProfile();
@@ -9,13 +13,13 @@ export default async function FeedPage() {
 
   const { data: rows } = await supabase
     .from('assets')
-    .select('id, title, description, tags, metadata, type, created_at, profiles!owner_id(full_name), likes(count), usages(count)')
+    .select('id, title, description, tags, metadata, type, created_at, profiles!owner_id(full_name, avatar_url), likes(count), usages(count)')
     .order('created_at', { ascending: false });
 
   type Row = {
     id: string; title: string; description: string | null; tags: string[] | null;
     metadata: { purpose?: string; framework?: string } | null; type: string;
-    profiles: { full_name: string | null } | null;
+    profiles: { full_name: string | null; avatar_url: string | null } | null;
     likes: { count: number }[]; usages: { count: number }[];
   };
 
@@ -23,6 +27,7 @@ export default async function FeedPage() {
     id: a.id,
     name: a.title,
     author: a.profiles?.full_name ?? 'Unknown',
+    avatarUrl: a.profiles?.avatar_url ? buildAvatarUrl(a.profiles.avatar_url) : null,
     tags: (a.tags ?? []).map((t) => t.toUpperCase()).slice(0, 3),
     description: a.description || a.metadata?.purpose || '',
     likes: a.likes?.[0]?.count ?? 0,
@@ -31,12 +36,12 @@ export default async function FeedPage() {
     featured: false,
   }));
 
-  // Highlight the most-endorsed agent.
+  console.log(agents);
+
   const byLikes = [...agents].sort((x, y) => y.likes - x.likes);
   if (byLikes[0]) byLikes[0].featured = true;
   const trending = byLikes.slice(0, 3);
 
-  // Leaderboard from real contributions.
   const counts = new Map<string, number>();
   agents.forEach((a) => counts.set(a.author, (counts.get(a.author) ?? 0) + 1));
   const leaders = [...counts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 4);
@@ -46,11 +51,8 @@ export default async function FeedPage() {
   return (
     <div className="flex flex-col min-h-screen bg-[#0b1120]">
       <div className="flex flex-col xl:flex-row flex-1 overflow-hidden">
-        {/* MAIN CONTENT AREA */}
         <section className="flex-1 overflow-y-auto p-4 md:p-8">
           <div>
-
-            {/* NEW TOP TRENDING ROW */}
             <div className="mb-10">
               <h3 className="flex items-center gap-2 text-xs font-bold mb-4 uppercase tracking-[0.2em] text-slate-500">
                 <Sparkles size={14} className="text-blue-400" /> Trending Now
@@ -62,7 +64,6 @@ export default async function FeedPage() {
               </div>
             </div>
 
-            {/* MAIN FEED */}
             <h2 className="text-2xl font-bold mb-1 text-white">Welcome, {firstName}!</h2>
             <p className="text-slate-500 mb-8 text-sm uppercase tracking-widest">Explore all Agents</p>
 
@@ -80,7 +81,6 @@ export default async function FeedPage() {
           </div>
         </section>
 
-        {/* SIDEBAR (Now only Leaderboard) */}
         <aside className="w-full xl:w-80 border-t xl:border-t-0 xl:border-l border-slate-800 p-6 bg-[#0f172a]">
           <LeaderboardSection leaders={leaders} />
         </aside>
@@ -89,7 +89,6 @@ export default async function FeedPage() {
   );
 }
 
-// New Component for the Top Row
 const TrendingCard = ({ agent, rank }: any) => (
   <Link href={`/agent/${agent.id}`} className="relative group p-4 rounded-xl bg-slate-900/40 border border-slate-800 hover:border-blue-500/50 transition-all cursor-pointer overflow-hidden block">
     <div className="absolute top-0 right-0 p-2 opacity-10 group-hover:opacity-20 transition-opacity">
@@ -100,18 +99,14 @@ const TrendingCard = ({ agent, rank }: any) => (
         0{rank}
       </span>
       <div className="min-w-0">
-        <h4 className="text-sm font-bold text-slate-200 truncate group-hover:text-white">
-          {agent.name}
-        </h4>
-        <p className="text-[10px] text-slate-500 uppercase tracking-tight">
-          {agent.model}
-        </p>
+        <h4 className="text-sm font-bold text-slate-200 truncate group-hover:text-white">{agent.name}</h4>
+        <p className="text-[10px] text-slate-500 uppercase tracking-tight">{agent.model}</p>
       </div>
     </div>
   </Link>
 );
 
-const AgentCard = ({ id, name, author, tags, description, likes, downloads, model, featured }: any) => (
+const AgentCard = ({ id, name, author, avatarUrl, tags, description, likes, downloads, model, featured }: any) => (
   <Link href={`/agent/${id}`} className={`p-6 rounded-xl border transition-all hover:border-slate-600 group flex flex-col ${
     featured
       ? 'bg-blue-900/10 border-blue-500/50 ring-1 ring-blue-500/50'
@@ -119,7 +114,14 @@ const AgentCard = ({ id, name, author, tags, description, likes, downloads, mode
   }`}>
     <div className="flex justify-between items-start mb-4 gap-2">
       <div className="flex items-center gap-3">
-        <div className="w-10 h-10 shrink-0 bg-slate-700 rounded-full border border-slate-600" />
+        <div className="relative w-10 h-10 shrink-0 rounded-full border border-slate-600 overflow-hidden bg-slate-700">
+          {avatarUrl
+            ? <Image src={avatarUrl} alt={author} fill className="object-cover" />
+            : <div className="w-full h-full flex items-center justify-center">
+                <User size={16} className="text-slate-400" />
+              </div>
+          }
+        </div>
         <div className="min-w-0">
           <h4 className="font-bold leading-tight group-hover:text-blue-400 transition-colors truncate text-white">{name}</h4>
           <p className="text-xs text-slate-400 truncate">by {author}</p>
@@ -171,10 +173,10 @@ const LeaderboardSection = ({ leaders }: { leaders: [string, number][] }) => (
         <div key={name} className="flex items-center justify-between group cursor-pointer">
           <div className="flex items-center gap-3">
             <div className="relative">
-                <div className="w-9 h-9 bg-slate-800 rounded-full border border-slate-700 group-hover:border-slate-500 transition-colors" />
-                <div className="absolute -top-1 -right-1 w-4 h-4 bg-slate-900 border border-slate-700 rounded-full flex items-center justify-center text-[8px] font-bold text-slate-400">
-                    {i + 1}
-                </div>
+              <div className="w-9 h-9 bg-slate-800 rounded-full border border-slate-700 group-hover:border-slate-500 transition-colors" />
+              <div className="absolute -top-1 -right-1 w-4 h-4 bg-slate-900 border border-slate-700 rounded-full flex items-center justify-center text-[8px] font-bold text-slate-400">
+                {i + 1}
+              </div>
             </div>
             <p className="text-sm font-medium text-slate-300 group-hover:text-white transition-colors">{name}</p>
           </div>

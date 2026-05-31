@@ -16,7 +16,7 @@ export default async function SearchPage({
   return (
     <div className="flex flex-col min-h-screen bg-[#0b1120]">
       <section className="flex-1 overflow-y-auto p-4 md:p-8">
-        <div className="max-w-5xl">
+        <div>
           <h3 className="flex items-center gap-2 text-xs font-bold mb-2 uppercase tracking-[0.2em] text-slate-500">
             <Sparkles size={14} className="text-blue-400" /> Semantic results
           </h3>
