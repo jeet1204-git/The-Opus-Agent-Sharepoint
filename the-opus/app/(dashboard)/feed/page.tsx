@@ -51,9 +51,24 @@ export default async function FeedPage({
   if (byLikes[0]) byLikes[0].featured = true;
   const trending = byLikes.slice(0, 3);
 
-  const counts = new Map<string, number>();
-  agents.forEach((a) => counts.set(a.author, (counts.get(a.author) ?? 0) + 1));
-  const leaders = [...counts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 4);
+  // ── Leaderboard: total likes per author ──────────────────────────────────
+  // Aggregate likes + pick avatar from the author's most-liked agent
+  type LeaderEntry = { author: string; avatarUrl: string | null; totalLikes: number };
+  const authorMap = new Map<string, LeaderEntry>();
+  for (const a of agents) {
+    const existing = authorMap.get(a.author);
+    if (!existing) {
+      authorMap.set(a.author, { author: a.author, avatarUrl: a.avatarUrl, totalLikes: a.likes });
+    } else {
+      existing.totalLikes += a.likes;
+      // Prefer the avatar from the agent with most likes (already sorted desc)
+      if (!existing.avatarUrl && a.avatarUrl) existing.avatarUrl = a.avatarUrl;
+    }
+  }
+  const leaders = [...authorMap.values()]
+    .sort((a, b) => b.totalLikes - a.totalLikes)
+    .slice(0, 4);
+  // ─────────────────────────────────────────────────────────────────────────
 
   const visible = openOnly ? agents.filter((a) => !a.restricted) : agents;
   const firstName = (profile.full_name ?? 'there').split(' ')[0];
@@ -198,25 +213,39 @@ const AgentCard = ({ id, name, author, avatarUrl, tags, description, likes, down
   </Link>
 );
 
-const LeaderboardSection = ({ leaders }: { leaders: [string, number][] }) => (
+type LeaderEntry = { author: string; avatarUrl: string | null; totalLikes: number };
+
+const LeaderboardSection = ({ leaders }: { leaders: LeaderEntry[] }) => (
   <div>
     <h3 className="flex items-center gap-2 text-xs font-bold mb-6 uppercase tracking-[0.2em] text-slate-500">
       <Trophy size={14} className="text-yellow-500" /> Top Contributors
     </h3>
     <div className="space-y-5">
-      {leaders.map(([name, n], i) => (
-        <div key={name} className="flex items-center justify-between group cursor-pointer">
+      {leaders.map(({ author, avatarUrl, totalLikes }, i) => (
+        <div key={author} className="flex items-center justify-between group">
           <div className="flex items-center gap-3">
-            <div className="relative">
-              <div className="w-9 h-9 bg-slate-100 rounded-full border border-slate-200 group-hover:border-slate-300 transition-colors" />
+            {/* Avatar with rank badge */}
+            <div className="relative shrink-0">
+              <div className="w-9 h-9 rounded-full border border-slate-200 group-hover:border-slate-300 transition-colors overflow-hidden bg-slate-100">
+                {avatarUrl ? (
+                  <Image src={avatarUrl} alt={author} width={36} height={36} className="object-cover w-full h-full" />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center">
+                    <User size={14} className="text-slate-500" />
+                  </div>
+                )}
+              </div>
               <div className="absolute -top-1 -right-1 w-4 h-4 bg-white border border-slate-200 rounded-full flex items-center justify-center text-[8px] font-bold text-slate-500">
                 {i + 1}
               </div>
             </div>
-            <p className="text-sm font-medium text-slate-700 group-hover:text-[#15161a] transition-colors">{name}</p>
+            <p className="text-sm font-medium text-slate-700 group-hover:text-[#15161a] transition-colors truncate max-w-[120px]">
+              {author}
+            </p>
           </div>
-          <div className="text-[10px] font-mono text-slate-500">
-            {n} agent{n === 1 ? '' : 's'}
+          <div className="flex items-center gap-1 text-[11px] font-mono text-slate-500">
+            <Heart size={11} className="text-pink-500/60" />
+            {totalLikes.toLocaleString()}
           </div>
         </div>
       ))}
