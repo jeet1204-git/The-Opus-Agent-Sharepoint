@@ -22,7 +22,7 @@ export function LikeButton({
   const [pending, start] = useTransition();
 
   // Restricted agents: other departments can see the endorsement count (trust
-  // signal) but cannot endorse — show a static, non-interactive badge.
+  // signal) but cannot endorse - show a static, non-interactive badge.
   if (locked) {
     return (
       <div

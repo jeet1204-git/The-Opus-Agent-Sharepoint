@@ -1,4 +1,4 @@
-// Preset department list — used by employee provisioning and (Part B) agent
+// Preset department list - used by employee provisioning and (Part B) agent
 // scoping. A fixed list keeps filtering + the demo clean; can be made
 // org-configurable later.
 export const DEPARTMENTS = [

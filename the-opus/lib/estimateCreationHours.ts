@@ -28,7 +28,7 @@ export async function estimateCreationHours(
 ): Promise<EstimationResult> {
   if (assets.length === 0) return { assets: [], totalHours: 0 };
 
-  // Truncate long content — we only need enough to judge difficulty
+  // Truncate long content - we only need enough to judge difficulty
   const MAX_CHARS = 600;
   const payload = assets.map((a) => ({
     id: a.id,
@@ -42,7 +42,7 @@ Score each on three dimensions from 0.0 to 1.0:
 - complexity: how much logic, branching, or multi-step reasoning? (0 = single instruction, 1 = highly complex)
 - specificity: how domain-specific or customised? (0 = generic e.g. "summarise text", 1 = deeply tailored workflow)
 
-Reply ONLY with minified JSON — no markdown, no backticks, no explanation:
+Reply ONLY with minified JSON - no markdown, no backticks, no explanation:
 [{"id":"...","length":0.0,"complexity":0.0,"specificity":0.0}]
 
 Assets:

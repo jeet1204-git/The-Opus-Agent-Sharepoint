@@ -92,7 +92,7 @@ export default function UploadPage() {
               <AlertTriangle size={18} />
               <h3 className="font-bold">
                 {strongest && strongest.similarity >= 0.6
-                  ? "This may already exist — reuse instead of rebuilding?"
+                  ? "This may already exist - reuse instead of rebuilding?"
                   : "Similar agents already in the registry"}
               </h3>
             </div>
@@ -167,7 +167,7 @@ export default function UploadPage() {
 
           {/* Contract metadata */}
           <div className="rounded-xl border border-slate-200 bg-white p-6 space-y-4">
-            <p className="text-xs font-bold uppercase tracking-widest text-slate-500">The contract — what another team needs to reuse this</p>
+            <p className="text-xs font-bold uppercase tracking-widest text-slate-500">The contract - what another team needs to reuse this</p>
 
             <div>
               <label className={labelCls}>Purpose * (what it does)</label>
@@ -222,7 +222,7 @@ export default function UploadPage() {
                   onChange={(e) => setDept(e.target.value)}
                   className={inputCls}
                 >
-                  <option value="">— Everyone (no department) —</option>
+                  <option value="">- Everyone (no department) -</option>
                   {DEPARTMENTS.map((d) => (
                     <option key={d} value={d}>{d}</option>
                   ))}
@@ -239,14 +239,14 @@ export default function UploadPage() {
             </div>
             <p className="text-xs text-slate-500">
               Restricted agents stay <span className="text-slate-500">discoverable by everyone</span> (title,
-              description, trust signals) — but only {dept || "the chosen department"} (and admins) can see the
+              description, trust signals) - but only {dept || "the chosen department"} (and admins) can see the
               prompt/file and run it.
             </p>
           </div>
 
           {/* Runnable content */}
           <div>
-            <label className={labelCls}>Content — the prompt / config *</label>
+            <label className={labelCls}>Content - the prompt / config *</label>
             <textarea name="content" rows={8} className={`${inputCls} font-mono`} placeholder={'You are a legal analyst. Given a brief, extract...\n\n(or paste a LangChain/CrewAI config)'} />
             <FieldHint issues={state.issues} field="content" />
           </div>

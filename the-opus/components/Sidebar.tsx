@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { LayoutGrid, Users, BookOpen, UploadCloud, Shield, TrendingUp, SearchAlert } from 'lucide-react';
 import { SignOutButton } from '@/components/SignOutButton';
-import Image from 'next/image';
 
 interface NavItemProps {
   icon: React.ReactNode;
@@ -37,9 +36,7 @@ export const Sidebar = ({ isAdmin = false }: { isAdmin?: boolean }) => {
     <aside className="w-64 border-r border-slate-200 flex flex-col p-4 bg-white relative z-10">
       {/* Branding */}
       <a href="/" className="flex items-center gap-2 px-2 py-4 mb-4">
-        <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center border border-slate-200">
-          <Image src="/logos/the-opus-logo-symbol.svg" alt="The OPUS Logo" className="w-16 h-16" width={64} height={64} />
-        </div>
+        <div className="w-8 h-8 rounded-lg" style={{ background: "conic-gradient(from 120deg,#ff8a5c,#7c5cff,#2ed3b7,#ffd23f,#ff8a5c)" }} />
         <h1 className="font-bold text-lg tracking-tight text-[#15161a]" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>The OPUS</h1>
       </a>
 

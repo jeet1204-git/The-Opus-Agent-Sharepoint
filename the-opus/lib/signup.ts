@@ -20,7 +20,7 @@ export type EmailCheck =
 /**
  * Public: is this email authorized to sign up? Runs with the service role so an
  * unauthenticated visitor can be checked WITHOUT the allowlist being readable
- * by anyone. Returns only a coarse status — never the row.
+ * by anyone. Returns only a coarse status - never the row.
  */
 export async function checkSignupEmail(emailRaw: string): Promise<EmailCheck> {
   const email = emailRaw.trim().toLowerCase();
@@ -41,7 +41,7 @@ export async function checkSignupEmail(emailRaw: string): Promise<EmailCheck> {
  * Public: an invited employee (or the admin's invite flow) asks for an
  * activation link. Generates + stores a single-use token and returns it so the
  * caller can build the /signup/set-password link. (Email delivery is simulated
- * for the demo — the link is shown on-screen.)
+ * for the demo - the link is shown on-screen.)
  */
 export async function requestActivation(
   emailRaw: string
@@ -60,7 +60,7 @@ export async function requestActivation(
     return { ok: false, status: "not_found", message: "This email isn't registered by your organization." };
   }
   if (row.status === "active") {
-    return { ok: false, status: "active", message: "Account already exists — please sign in." };
+    return { ok: false, status: "active", message: "Account already exists - please sign in." };
   }
 
   const token = newToken();
@@ -80,7 +80,7 @@ export interface ActivateState {
 /**
  * Public (token-gated): validate the activation token, create the Supabase Auth
  * user with the employee's CHOSEN password, mark the allowlist row active, then
- * auto sign-in and land in the app. Passwords are hashed by Supabase — never
+ * auto sign-in and land in the app. Passwords are hashed by Supabase - never
  * stored or readable by us.
  */
 export async function activateAccount(
@@ -102,7 +102,7 @@ export async function activateAccount(
     .maybeSingle();
 
   if (!token || !row) return { error: "This activation link is invalid. Ask your admin to re-send it." };
-  if (row.status === "active") return { error: "This account is already active — please sign in." };
+  if (row.status === "active") return { error: "This account is already active - please sign in." };
   if (row.token_expires_at && new Date(row.token_expires_at).getTime() < Date.now()) {
     return { error: "This activation link has expired. Ask your admin to re-send it." };
   }
@@ -123,7 +123,7 @@ export async function activateAccount(
 
   if (createErr) {
     // Most likely: the auth user already exists.
-    return { error: "Could not activate this account. It may already exist — try signing in." };
+    return { error: "Could not activate this account. It may already exist - try signing in." };
   }
 
   await sb

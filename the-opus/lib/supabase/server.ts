@@ -4,7 +4,7 @@ import { cookies } from "next/headers";
 
 /**
  * Supabase client for Server Components, Route Handlers, and Server Actions.
- * Next 16: cookies() is async, so this function is async — always `await createClient()`.
+ * Next 16: cookies() is async, so this function is async - always `await createClient()`.
  */
 export async function createClient() {
   const cookieStore = await cookies();
@@ -23,7 +23,7 @@ export async function createClient() {
               cookieStore.set(name, value, options)
             );
           } catch {
-            // Called from a Server Component — safe to ignore; middleware refreshes the session.
+            // Called from a Server Component - safe to ignore; middleware refreshes the session.
           }
         },
       },
@@ -32,7 +32,7 @@ export async function createClient() {
 }
 
 /**
- * Service-role client. SERVER ONLY. Bypasses RLS — use for admin actions
+ * Service-role client. SERVER ONLY. Bypasses RLS - use for admin actions
  * like creating org users. Never import this into a Client Component.
  */
 export function createAdminClient() {

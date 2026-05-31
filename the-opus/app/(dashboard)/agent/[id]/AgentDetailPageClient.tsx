@@ -15,7 +15,7 @@ export default function AgentDetailPageClient({ agent, liked, locked = false, re
   const reviewCount = reviews.length;
   const avgRating = reviewCount
     ? (reviews.reduce((s: number, r: any) => s + (r.rating ?? 0), 0) / reviewCount).toFixed(1)
-    : '—';
+    : '-';
   const executions = agent.usages?.[0]?.count ?? 0;
   const likeCount = agent.likes?.[0]?.count ?? 0;
   const versions = agent.versions ?? [];
@@ -116,7 +116,7 @@ export default function AgentDetailPageClient({ agent, liked, locked = false, re
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {reviews.length === 0 && (
-              <p className="text-sm text-slate-500">No reviews yet — be the first to endorse this agent.</p>
+              <p className="text-sm text-slate-500">No reviews yet - be the first to endorse this agent.</p>
             )}
             {reviews.map((r: any) => (
               <ReviewCard

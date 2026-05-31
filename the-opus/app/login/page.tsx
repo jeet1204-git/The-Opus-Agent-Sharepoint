@@ -31,7 +31,7 @@ export default async function LoginPage({
 
         {ok === "activated" && (
           <div className="mb-4 rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-700">
-            Account activated — please sign in.
+            Account activated - please sign in.
           </div>
         )}
         {error && (

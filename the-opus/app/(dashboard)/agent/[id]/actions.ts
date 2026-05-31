@@ -7,7 +7,7 @@ import { canUsePayload } from "@/lib/access";
 
 /**
  * Department gating for SOCIAL actions (like / review). You can only endorse or
- * review an agent you can actually use — restricted agents stay discoverable
+ * review an agent you can actually use - restricted agents stay discoverable
  * (title/trust visible) but their department owns the social signals too.
  * Mirrors the payload gate in lib/run.ts. Never trust the client.
  */

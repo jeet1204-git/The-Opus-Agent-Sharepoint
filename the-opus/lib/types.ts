@@ -1,4 +1,4 @@
-// Shared domain types — the A↔B contract. Mirror of supabase/schema.sql.
+// Shared domain types - the A↔B contract. Mirror of supabase/schema.sql.
 
 export type AssetType = "agent" | "skill" | "prompt";
 export type UserRole = "admin" | "member";

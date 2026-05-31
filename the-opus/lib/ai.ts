@@ -1,9 +1,9 @@
-// AI layer — powered by OpenRouter (one key for embeddings + generation).
+// AI layer - powered by OpenRouter (one key for embeddings + generation).
 // OpenAI-compatible endpoints: /embeddings and /chat/completions.
 
 const BASE = "https://openrouter.ai/api/v1";
 
-// Embeddings: 768-dim — MUST match vector(768) in supabase/schema.sql.
+// Embeddings: 768-dim - MUST match vector(768) in supabase/schema.sql.
 const EMBED_MODEL = "openai/text-embedding-3-small";
 // Two tiers, chosen per use case (we have a limited shared credit budget):
 //  - QUALITY: user-facing generation a judge reads (e.g. Run an agent).
@@ -60,12 +60,12 @@ async function complete(prompt: string, model: string): Promise<string> {
   return data.choices?.[0]?.message?.content ?? "";
 }
 
-/** QUALITY generation — user-facing output (e.g. Run an agent). Uses GEN_MODEL. */
+/** QUALITY generation - user-facing output (e.g. Run an agent). Uses GEN_MODEL. */
 export async function generate(prompt: string): Promise<string> {
   return complete(prompt, GEN_MODEL);
 }
 
-/** FAST generation — cheap utility tasks (auto-metadata, eval scoring, classify). */
+/** FAST generation - cheap utility tasks (auto-metadata, eval scoring, classify). */
 export async function generateFast(prompt: string): Promise<string> {
   return complete(prompt, FAST_MODEL);
 }
