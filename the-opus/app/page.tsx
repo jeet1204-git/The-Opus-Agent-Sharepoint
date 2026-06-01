@@ -80,7 +80,7 @@ export default function LandingPage() {
         <div className="blob b1" /><div className="blob b2" /><div className="blob b3" /><div className="blob b4" />
 
         <nav className="nav">
-          <div className="wm"><span className="logo" />Opus</div>
+          <div className="wm"><span className="logo" />The OPUS</div>
           <div className="navlinks">
             {isLoggedIn ? (
               <>

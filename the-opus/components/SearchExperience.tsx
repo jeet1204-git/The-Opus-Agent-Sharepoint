@@ -10,12 +10,13 @@ import type { SearchMatch } from "@/lib/types";
 const STEPS = ["Reading your request…", "Searching the registry…", "Asking the assistant…"];
 
 function relLabel(s: number): { text: string; cls: string } {
-  if (s >= 0.3) return { text: "Strong match", cls: "bg-emerald-500/15 text-emerald-300" };
-  if (s >= 0.22) return { text: "Related", cls: "bg-blue-500/15 text-[#7c5cff]" };
-  return { text: "Loosely related", cls: "bg-slate-700/60 text-slate-500" };
+  if (s >= 0.3) return { text: "Strong match", cls: "bg-emerald-100 text-emerald-700" };
+  if (s >= 0.22) return { text: "Related", cls: "bg-violet-100 text-[#7c5cff]" };
+  return { text: "Loosely related", cls: "bg-slate-100 text-slate-500" };
 }
 
 function isLowConfidenceResult(results: SearchMatch[], verdict: string | undefined): boolean {
+  if (verdict === "error") return false; // AI down is not a "search gap" - don't report or nudge
   if (verdict === "none") return true;
   const topSimilarity = results[0]?.similarity ?? null;
   if (topSimilarity === null) return true;
@@ -102,7 +103,7 @@ export default function SearchExperience({ query }: { query: string }) {
               <div
                 key={i}
                 className={`h-1 flex-1 rounded-full transition-colors duration-300 ${
-                  i <= step ? "bg-blue-500" : "bg-slate-700"
+                  i <= step ? "bg-[#7c5cff]" : "bg-slate-200"
                 }`}
               />
             ))}
@@ -117,11 +118,11 @@ export default function SearchExperience({ query }: { query: string }) {
 
       {/* Low-confidence nudge */}
       {!loading && isLowConfidenceResult(results, ai?.verdict) && (
-        <div className="mb-8 rounded-xl border border-amber-500/30 bg-amber-500/[0.06] px-5 py-4 flex items-start gap-3">
-          <Search size={16} className="text-amber-400 mt-0.5 shrink-0" />
-          <p className="text-sm text-amber-200/80">
+        <div className="mb-8 rounded-xl border border-amber-300 bg-amber-50 px-5 py-4 flex items-start gap-3">
+          <Search size={16} className="text-amber-600 mt-0.5 shrink-0" />
+          <p className="text-sm text-amber-800">
             We couldn&apos;t find a strong match for this. We&apos;ve noted the gap - try rephrasing, or{" "}
-            <Link href="/agent/new" className="underline underline-offset-2 text-amber-300 hover:text-amber-200">
+            <Link href="/agent/new" className="underline underline-offset-2 text-amber-700 hover:text-amber-900 font-medium">
               create this agent
             </Link>
             .
@@ -174,7 +175,7 @@ export default function SearchExperience({ query }: { query: string }) {
         </>
       )}
 
-      {!loading && results.length === 0 && (
+      {!loading && results.length === 0 && ai?.verdict !== "error" && (
         <div className="rounded-xl border border-dashed border-slate-200 p-10 text-center text-slate-500">
           <Search size={20} className="mx-auto mb-2" />
           No similar agents found. Try describing the task differently.
@@ -185,15 +186,22 @@ export default function SearchExperience({ query }: { query: string }) {
 }
 
 function AnswerCard({ ai, best }: { ai: NonNullable<AiSearchResult["ai"]>; best: SearchMatch | null }) {
+  const isError = ai.verdict === "error";
   const badge =
     ai.verdict === "exists"
-      ? { text: "Already exists - reuse it", cls: "bg-emerald-500/20 text-emerald-300" }
+      ? { text: "Already exists - reuse it", cls: "bg-emerald-100 text-emerald-700" }
       : ai.verdict === "closest"
-        ? { text: "Closest starting point", cls: "bg-amber-500/20 text-amber-300" }
-        : { text: "No match yet", cls: "bg-slate-700/60 text-slate-700" };
+        ? { text: "Closest starting point", cls: "bg-amber-100 text-amber-700" }
+        : ai.verdict === "error"
+          ? { text: "Temporarily unavailable", cls: "bg-amber-100 text-amber-700" }
+          : { text: "No match yet", cls: "bg-slate-200 text-slate-600" };
 
   return (
-    <div className="mb-8 rounded-xl border border-blue-500/40 bg-gradient-to-br from-blue-500/[0.12] to-slate-900/40 p-6">
+    <div
+      className={`mb-8 rounded-xl border p-6 ${
+        isError ? "border-amber-300 bg-amber-50" : "border-[#7c5cff]/30 bg-[#7c5cff]/[0.05]"
+      }`}
+    >
       <div className="mb-3 flex items-center gap-2">
         <span className="flex items-center gap-1.5 text-[#7c5cff]">
           <Wand2 size={16} /> <span className="text-xs font-bold uppercase tracking-wider">Assistant</span>
