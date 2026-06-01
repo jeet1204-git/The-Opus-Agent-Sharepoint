@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { embed, generateFast } from "@/lib/ai";
 import type { SearchMatch } from "@/lib/types";
 
-export type SearchVerdict = "exists" | "closest" | "none";
+export type SearchVerdict = "exists" | "closest" | "none" | "error";
 
 export interface AiVerdict {
   verdict: SearchVerdict;
@@ -67,7 +67,33 @@ export async function aiSearch(query: string): Promise<AiSearchResult> {
   const trimmed = query.trim();
   if (!trimmed) return { results: [], ai: null };
 
-  const results = await searchAssets(trimmed, 6);
+  // Embed first, in isolation, so we can tell "AI is down" apart from
+  // "the registry genuinely has no match". A swallowed embed error must NOT
+  // masquerade as an empty registry - that looks broken on stage.
+  let queryEmbedding: number[];
+  try {
+    queryEmbedding = await embed(trimmed);
+  } catch {
+    return {
+      results: [],
+      ai: {
+        verdict: "error",
+        bestId: null,
+        headline: "AI search is temporarily unavailable.",
+        reason:
+          "We couldn't reach the assistant right now - please try again in a moment. You can still browse the registry below.",
+      },
+    };
+  }
+
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("match_assets", {
+    query_embedding: queryEmbedding,
+    match_count: 6,
+  });
+  if (error) console.error("match_assets RPC failed:", error.message);
+  const results: SearchMatch[] = error ? [] : ((data as SearchMatch[]) ?? []);
+
   if (results.length === 0) {
     return {
       results,
@@ -105,7 +131,7 @@ Reply with ONLY minified JSON, no markdown, no prose:
     const slice = raw.slice(raw.indexOf("{"), raw.lastIndexOf("}") + 1);
     const json = JSON.parse(slice) as { verdict?: string; best_id?: string; headline?: string; reason?: string };
     const validId = results.some((r) => r.id === json.best_id) ? json.best_id! : null;
-    const verdict: SearchVerdict = (["exists", "closest", "none"] as const).includes(json.verdict as SearchVerdict)
+    const verdict: SearchVerdict = (["exists", "closest", "none"] as const).includes(json.verdict as "exists" | "closest" | "none")
       ? (json.verdict as SearchVerdict)
       : "closest";
     ai = {
@@ -126,7 +152,6 @@ Reply with ONLY minified JSON, no markdown, no prose:
 
   // Enrich the chosen agent with live trust signals for the answer card.
   if (ai?.bestId) {
-    const supabase = await createClient();
     const [likesRes, runsRes, revRes] = await Promise.all([
       supabase.from("likes").select("*", { count: "exact", head: true }).eq("asset_id", ai.bestId),
       supabase.from("usages").select("*", { count: "exact", head: true }).eq("asset_id", ai.bestId),
